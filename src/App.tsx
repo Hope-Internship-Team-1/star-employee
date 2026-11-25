@@ -1,11 +1,5 @@
-import './App.css';
-
 function App() {
-  return (
-    <>
-      <div className="App">Vite APP</div>
-    </>
-  );
+  return <main className="p-8" />;
 }
 
 export default App;
