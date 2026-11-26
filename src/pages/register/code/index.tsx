@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Button, Form, Input } from 'antd';
-import { AsideSteps } from '../../../components/AuthAside';
+import { Form, Input } from 'antd';
 import AuthLayout from '../../../components/AuthLayout';
+import AuthStepper from '../../../components/AuthStepper';
 import FormError from '../../../components/FormError';
-import { fieldClassName } from '../../../components/fieldClassName';
+import { monoFieldClassName } from '../../../components/fieldClassName';
+import { primaryButtonClassName } from '../../../components/buttonClassName';
 import { useAuthFlow } from '../../../context/authFlowContext';
 import { format, useLocale, useMessages } from '../../../i18n';
 import { requestOtp, verifyOtp } from '../../../services/auth';
@@ -64,11 +65,15 @@ export default function RegisterCodePage() {
   if (!email) return <Navigate to={`/${locale}/register`} replace />;
 
   return (
-    <AuthLayout panel={<AsideSteps current={2} />}>
-      <h1 className="font-display text-[2.5rem] leading-none tracking-tight text-ink">
+    <AuthLayout>
+      <AuthStepper current={2} />
+
+      <h1 className="font-page text-page-lg-mobile text-on-surface lg:text-page-lg">
         {t.register.step2Title}
       </h1>
-      <p className="mt-4 text-sm text-ink-soft">{format(t.register.sentTo, { email })}</p>
+      <p className="font-body text-body-md text-text-secondary">
+        {format(t.register.sentTo, { email })}
+      </p>
 
       <Form
         name="register-code"
@@ -76,34 +81,40 @@ export default function RegisterCodePage() {
         requiredMark={false}
         onValuesChange={() => setError(null)}
         onFinish={onFinish}
-        className="mt-6 [&_.ant-form-item]:mb-4"
+        className="flex flex-col gap-grid-4"
       >
         <Form.Item
           label={t.login.codeLabel}
           name="code"
-          extra={t.login.codeHint}
+          extra={<span className="font-meta text-meta-sm">{t.login.codeHint}</span>}
           rules={[{ required: true, message: t.errors.codeRequired }]}
         >
           <Input
             autoComplete="one-time-code"
             inputMode="numeric"
             maxLength={6}
-            className={fieldClassName}
+            placeholder={t.login.codePlaceholder}
+            className={monoFieldClassName}
           />
         </Form.Item>
 
         {error && <FormError message={t.errors[error]} />}
 
-        <Button type="primary" htmlType="submit" block loading={submitting} className="!h-10">
-          {t.register.verify}
-        </Button>
+        <button
+          type="submit"
+          disabled={submitting}
+          aria-busy={submitting}
+          className={primaryButtonClassName}
+        >
+          {submitting ? t.login.submitting : t.register.verify}
+        </button>
       </Form>
 
       <button
         type="button"
         onClick={resend}
         disabled={seconds > 0 || sending}
-        className="mt-4 text-sm text-clay hover:underline disabled:text-ink-soft disabled:no-underline"
+        className="min-h-11 self-start rounded-control font-label text-label-md text-primary transition-colors duration-hover-colour ease-hover-colour hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:text-text-secondary"
       >
         {seconds > 0 ? format(t.register.resendIn, { seconds }) : t.register.resend}
       </button>

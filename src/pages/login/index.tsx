@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Form, Input } from 'antd';
-import { AsideNote } from '../../components/AuthAside';
+import { Form, Input } from 'antd';
 import AuthLayout from '../../components/AuthLayout';
-import FormError from '../../components/FormError';
-import { fieldClassName } from '../../components/fieldClassName';
+import ErrorBanner from '../../components/ErrorBanner';
+import { bodyFieldClassName, monoFieldClassName } from '../../components/fieldClassName';
+import { primaryButtonClassName } from '../../components/buttonClassName';
+import { AlertCircleIcon } from '../../components/Icons';
 import { format, useLocale, useMessages } from '../../i18n';
 import { loginWithPassword, requestOtp, verifyOtp } from '../../services/auth';
 import { errorKey } from '../../services/errors';
 import type { ErrorKey } from '../../services/errors';
 
-type TabId = 'password' | 'code';
+type TabId = 'code' | 'password';
 
 interface EmailValues {
   email: string;
@@ -33,17 +34,19 @@ export default function LoginPage() {
   const [codeForm] = Form.useForm<CodeValues>();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  const [tab, setTab] = useState<TabId>('password');
+  const [tab, setTab] = useState<TabId>('code');
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sending, setSending] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState<ErrorKey | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsMissing, setTermsMissing] = useState(false);
 
   const tabs: Array<{ id: TabId; label: string }> = [
-    { id: 'password', label: t.login.tabPassword },
     { id: 'code', label: t.login.tabCode },
+    { id: 'password', label: t.login.tabPassword },
   ];
 
   useEffect(() => {
@@ -52,11 +55,17 @@ export default function LoginPage() {
     return () => window.clearTimeout(timer);
   }, [seconds]);
 
+  function resetError() {
+    setError(null);
+  }
+
   function selectTab(next: TabId) {
     setTab(next);
     setError(null);
+    setSubmitting(false);
     setCodeSent(false);
     setSeconds(0);
+    setTermsMissing(false);
 
     if (next === 'password') passwordForm.setFieldsValue({ email });
     else codeForm.setFieldsValue({ email });
@@ -79,8 +88,16 @@ export default function LoginPage() {
   }
 
   async function onPasswordFinish(values: PasswordValues) {
-    setSubmitting(true);
     setError(null);
+    setTermsMissing(false);
+
+    // The backend has no field for terms consent, so this gate stays client-side.
+    if (!termsAccepted) {
+      setTermsMissing(true);
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
       await loginWithPassword(values.email, values.password);
@@ -130,186 +147,230 @@ export default function LoginPage() {
     }
   }
 
+  function retry() {
+    setError(null);
+    setSubmitting(false);
+    setSending(false);
+    setTermsMissing(false);
+  }
+
   return (
-    <AuthLayout panel={<AsideNote text={t.panel.loginLine} />}>
-      <h1 className="font-display text-[2.5rem] leading-none tracking-tight text-ink">
-        {t.login.title}
-      </h1>
+    <AuthLayout withPoster>
+      <section className="flex flex-col gap-card-pad-lg">
+        <h1 className="font-page text-page-lg-mobile text-on-surface lg:text-page-lg">
+          {t.login.title}
+        </h1>
 
-      <div
-        role="tablist"
-        aria-label={t.login.title}
-        className="mt-8 flex gap-6 border-b border-line"
-      >
-        {tabs.map((item, index) => {
-          const selected = tab === item.id;
+        {error && <ErrorBanner message={t.errors[error]} onRetry={retry} />}
 
-          return (
-            <button
-              key={item.id}
-              ref={(node) => {
-                tabRefs.current[index] = node;
-              }}
-              id={`login-tab-${item.id}`}
-              type="button"
-              role="tab"
-              aria-selected={selected}
-              aria-controls={`login-panel-${item.id}`}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => selectTab(item.id)}
-              onKeyDown={(event) => onTabKeyDown(event, index)}
-              className={[
-                '-mb-px border-b-2 pb-3 text-sm font-medium transition-colors',
-                selected
-                  ? 'border-clay text-ink'
-                  : 'border-transparent text-ink-soft hover:text-ink',
-              ].join(' ')}
-            >
-              {item.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div
-        id="login-panel-password"
-        role="tabpanel"
-        aria-labelledby="login-tab-password"
-        tabIndex={0}
-        hidden={tab !== 'password'}
-        className="mt-6"
-      >
-        <Form
-          name="login-password"
-          form={passwordForm}
-          layout="vertical"
-          requiredMark={false}
-          initialValues={{ email }}
-          onValuesChange={(_, all) => {
-            setEmail(all.email ?? '');
-            setError(null);
-          }}
-          onFinish={onPasswordFinish}
-          className="[&_.ant-form-item]:mb-4"
+        <div
+          role="tablist"
+          aria-label={t.login.title}
+          className="flex items-center gap-card-pad-lg border-b border-outline"
         >
-          <Form.Item
-            label={t.login.emailLabel}
-            name="email"
-            rules={[
-              { required: true, message: t.errors.emailInvalid },
-              { type: 'email', message: t.errors.emailInvalid },
-            ]}
-          >
-            <Input
-              autoComplete="email"
-              inputMode="email"
-              placeholder={t.login.emailPlaceholder}
-              className={fieldClassName}
-            />
-          </Form.Item>
+          {tabs.map((item, index) => {
+            const selected = tab === item.id;
 
-          <Form.Item
-            label={t.login.passwordLabel}
-            name="password"
-            rules={[{ required: true, message: t.errors.passwordRequired }]}
-          >
-            <Input.Password
-              autoComplete="current-password"
-              placeholder={t.login.passwordPlaceholder}
-              className={fieldClassName}
-            />
-          </Form.Item>
+            return (
+              <button
+                key={item.id}
+                ref={(node) => {
+                  tabRefs.current[index] = node;
+                }}
+                id={`login-tab-${item.id}`}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                aria-controls={`login-panel-${item.id}`}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => selectTab(item.id)}
+                onKeyDown={(event) => onTabKeyDown(event, index)}
+                className={[
+                  '-mb-px min-h-11 border-b-2 pb-grid-2 transition-colors duration-hover-colour ease-hover-colour focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:min-h-0',
+                  selected
+                    ? 'border-primary font-label text-label-md text-on-surface'
+                    : 'border-transparent font-body text-body-sm text-text-secondary hover:text-on-surface',
+                ].join(' ')}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
 
-          {error && <FormError message={t.errors[error]} />}
-
-          <Button type="primary" htmlType="submit" block loading={submitting} className="!h-10">
-            {t.login.submit}
-          </Button>
-        </Form>
-      </div>
-
-      <div
-        id="login-panel-code"
-        role="tabpanel"
-        aria-labelledby="login-tab-code"
-        tabIndex={0}
-        hidden={tab !== 'code'}
-        className="mt-6"
-      >
-        <Form
-          name="login-code"
-          form={codeForm}
-          layout="vertical"
-          requiredMark={false}
-          initialValues={{ email }}
-          onValuesChange={(_, all) => {
-            setEmail(all.email ?? '');
-            setError(null);
-          }}
-          onFinish={onCodeFinish}
-          className="[&_.ant-form-item]:mb-4"
+        <div
+          id="login-panel-code"
+          role="tabpanel"
+          aria-labelledby="login-tab-code"
+          hidden={tab !== 'code'}
         >
-          <Form.Item
-            label={t.login.emailLabel}
-            name="email"
-            rules={[
-              { required: true, message: t.errors.emailInvalid },
-              { type: 'email', message: t.errors.emailInvalid },
-            ]}
+          <Form
+            name="login-code"
+            form={codeForm}
+            layout="vertical"
+            requiredMark={false}
+            initialValues={{ email }}
+            onValuesChange={(_, all) => {
+              setEmail(all.email ?? '');
+              resetError();
+            }}
+            onFinish={onCodeFinish}
+            className="flex flex-col gap-grid-4"
           >
-            <Input
-              autoComplete="email"
-              inputMode="email"
-              placeholder={t.login.emailPlaceholder}
-              className={fieldClassName}
-            />
-          </Form.Item>
+            <div className="flex flex-col gap-grid-1">
+              <div className="flex items-center gap-grid-2">
+                <Form.Item
+                  className="!mb-0 w-full flex-1"
+                  label={t.login.emailLabel}
+                  name="email"
+                  rules={[
+                    { required: true, message: t.errors.emailInvalid },
+                    { type: 'email', message: t.errors.emailInvalid },
+                  ]}
+                >
+                  <Input
+                    autoComplete="email"
+                    inputMode="email"
+                    placeholder={t.login.emailPlaceholder}
+                    className={monoFieldClassName}
+                  />
+                </Form.Item>
+                <button
+                  type="button"
+                  onClick={sendCode}
+                  disabled={sending || seconds > 0}
+                  className="mt-[30px] min-h-11 shrink-0 whitespace-nowrap rounded-control font-label text-label-md text-primary transition-colors duration-hover-colour ease-hover-colour hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {seconds > 0 ? format(t.login.resendInShort, { seconds }) : t.login.sendCode}
+                </button>
+              </div>
+              <span className="sr-only" aria-live="polite">
+                {seconds > 0 ? format(t.login.resendIn, { seconds }) : ''}
+              </span>
+            </div>
 
-          <Button
-            type="default"
-            htmlType="button"
-            block
-            loading={sending}
-            disabled={seconds > 0}
-            onClick={sendCode}
-            className="!h-10 border-line"
+            {codeSent && (
+              <Form.Item
+                label={t.login.codeLabel}
+                name="code"
+                extra={<span className="font-meta text-meta-sm">{t.login.codeHint}</span>}
+                rules={[{ required: true, message: t.errors.codeRequired }]}
+              >
+                <Input
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder={t.login.codePlaceholder}
+                  className={monoFieldClassName}
+                />
+              </Form.Item>
+            )}
+
+            {codeSent && (
+              <button
+                type="submit"
+                disabled={submitting}
+                aria-busy={submitting}
+                className={primaryButtonClassName}
+              >
+                {submitting ? t.login.submitting : t.login.submit}
+              </button>
+            )}
+          </Form>
+        </div>
+
+        <div
+          id="login-panel-password"
+          role="tabpanel"
+          aria-labelledby="login-tab-password"
+          hidden={tab !== 'password'}
+        >
+          <Form
+            name="login-password"
+            form={passwordForm}
+            layout="vertical"
+            requiredMark={false}
+            initialValues={{ email }}
+            onValuesChange={(_, all) => {
+              setEmail(all.email ?? '');
+              resetError();
+            }}
+            onFinish={onPasswordFinish}
+            className="flex flex-col gap-grid-4"
           >
-            {seconds > 0 ? format(t.login.resendIn, { seconds }) : t.login.sendCode}
-          </Button>
-
-          {codeSent && (
             <Form.Item
-              label={t.login.codeLabel}
-              name="code"
-              extra={t.login.codeHint}
-              rules={[{ required: true, message: t.errors.codeRequired }]}
-              className="!mt-4"
+              label={t.login.emailLabel}
+              name="email"
+              rules={[
+                { required: true, message: t.errors.emailInvalid },
+                { type: 'email', message: t.errors.emailInvalid },
+              ]}
             >
               <Input
-                autoComplete="one-time-code"
-                inputMode="numeric"
-                maxLength={6}
-                className={fieldClassName}
+                autoComplete="email"
+                inputMode="email"
+                placeholder={t.login.emailPlaceholder}
+                className={bodyFieldClassName}
               />
             </Form.Item>
-          )}
 
-          {error && <FormError message={t.errors[error]} />}
+            <Form.Item
+              label={t.login.passwordLabel}
+              name="password"
+              rules={[{ required: true, message: t.errors.passwordRequired }]}
+            >
+              <Input.Password
+                autoComplete="current-password"
+                placeholder={t.login.passwordPlaceholder}
+                className={bodyFieldClassName}
+              />
+            </Form.Item>
 
-          {codeSent && (
-            <Button type="primary" htmlType="submit" block loading={submitting} className="!h-10">
-              {t.login.submit}
-            </Button>
-          )}
-        </Form>
-      </div>
+            <div className="flex flex-col gap-grid-1 pt-grid-1">
+              <label className="inline-flex min-h-11 cursor-pointer items-start gap-grid-2 py-grid-1">
+                <input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(event) => {
+                    setTermsAccepted(event.target.checked);
+                    if (event.target.checked) setTermsMissing(false);
+                  }}
+                  className="mt-grid-1 h-4 w-4 shrink-0 rounded-control border border-outline bg-surface-raised accent-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                />
+                <span className="font-body text-body-sm text-text-secondary">{t.login.terms}</span>
+              </label>
+              {termsMissing && (
+                <p
+                  role="alert"
+                  className="flex items-center gap-grid-1 font-meta text-meta-md text-on-surface"
+                >
+                  <AlertCircleIcon />
+                  <span>{t.login.termsRequired}</span>
+                </p>
+              )}
+            </div>
 
-      <p className="mt-6 text-sm text-ink-soft">
-        {t.login.noAccount}{' '}
-        <Link to={`/${locale}/register`} className="text-clay hover:underline">
-          {t.login.registerLink}
-        </Link>
-      </p>
+            <button
+              type="submit"
+              disabled={submitting}
+              aria-busy={submitting}
+              className={primaryButtonClassName}
+            >
+              {submitting ? t.login.submitting : t.login.submit}
+            </button>
+          </Form>
+        </div>
+
+        <p className="font-body text-body-sm text-text-secondary">
+          {t.login.noAccount}{' '}
+          <Link
+            to={`/${locale}/register`}
+            className="ml-grid-1 inline-flex min-h-11 items-center rounded-control font-label text-label-md text-primary transition-colors duration-hover-colour ease-hover-colour hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            {t.login.registerLink}
+          </Link>
+        </p>
+      </section>
     </AuthLayout>
   );
 }

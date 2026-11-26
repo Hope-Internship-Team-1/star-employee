@@ -11,7 +11,7 @@ export default function LocaleSwitch() {
     <div
       role="group"
       aria-label={t.locale.label}
-      className="inline-flex items-center gap-0.5 rounded-full border border-line bg-cream p-0.5"
+      className="inline-flex items-center rounded-control border border-outline bg-surface-raised p-grid-1"
     >
       {options.map((option) => {
         const active = locale === option;
@@ -23,10 +23,10 @@ export default function LocaleSwitch() {
             aria-pressed={active}
             onClick={() => setLocale(option)}
             className={[
-              'min-h-11 rounded-full px-3 text-xs font-medium tracking-wide sm:min-h-8',
+              'min-h-11 rounded-control px-grid-3 py-grid-1 font-mono text-mono-meta transition-colors duration-hover-colour ease-hover-colour focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:min-h-8',
               active
-                ? 'bg-white text-ink shadow-[inset_0_0_0_1px_#E8E0D3]'
-                : 'text-ink-soft hover:text-ink',
+                ? 'bg-surface-subtle text-on-surface'
+                : 'text-text-secondary hover:text-on-surface',
             ].join(' ')}
           >
             {option.toUpperCase()}
