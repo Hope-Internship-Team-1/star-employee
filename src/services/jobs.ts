@@ -78,8 +78,20 @@ export function getJob(id: string): Promise<JobDetail | undefined> {
   return orUndefinedIfMissing(apiFetch<JobDetail>(`/jobs/${encodeURIComponent(id)}`));
 }
 
-export function listSimilarJobs(id: string, limit = 5): Promise<JobSummary[]> {
-  return apiFetch(`/jobs/${encodeURIComponent(id)}/similar${toQueryString({ limit })}`);
+// Unlike /jobs and the recommendation endpoints, /similar wraps each item as { job, company }.
+type SimilarItem = JobSummary | JobDetail;
+
+export function toJobSummary(item: SimilarItem): JobSummary {
+  if (!('job' in item)) return item;
+  const { id, name, initials, logoUrl } = item.company;
+  return { ...item.job, company: { id, name, initials, logoUrl } };
+}
+
+export async function listSimilarJobs(id: string, limit = 5): Promise<JobSummary[]> {
+  const items = await apiFetch<SimilarItem[]>(
+    `/jobs/${encodeURIComponent(id)}/similar${toQueryString({ limit })}`,
+  );
+  return items.map(toJobSummary);
 }
 
 export function listJobsOfCompany(companyId: string): Promise<Job[]> {
