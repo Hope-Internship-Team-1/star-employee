@@ -3,17 +3,18 @@ import { Link } from 'react-router-dom';
 import Container from '../../components/Container';
 import SectionHeading from '../../components/SectionHeading';
 import SearchBar from '../../components/SearchBar';
-import LanguageTag from '../../components/LanguageTag';
 import { ChevronLeftIcon, ChevronRightIcon, SlidersIcon } from '../../components/Icon';
 import { useJobsFilters } from '../../hooks/useJobsFilters';
 import { format, useLocale, useLocalePath, useMessages } from '../../i18n';
-import { EMPLOYMENT_TYPES, INDUSTRIES, PAGE_SIZE, SALARY_BANDS } from '../../data/dictionaries';
-import type { EmploymentType, Industry, WorkingLanguage } from '../../data/dictionaries';
-import { PROVINCES, citiesOf } from '../../data/geo';
-import { formatSalary, postedLabel } from '../../lib/format';
+import { EMPLOYMENT_TYPES, INDUSTRIES, PAGE_SIZE, SALARY_BANDS } from '../../services/types';
+import type { EmploymentType, Industry, JobSummary, WorkingLanguage } from '../../services/types';
+import { PROVINCES, citiesOf } from '../../lib/geo';
+import { postedLabel } from '../../lib/format';
 import { resourcePath } from '../../lib/slug';
 import { listJobs } from '../../services/jobs';
-import type { JobSort, Page, JobWithCompany } from '../../services/jobs';
+import type { JobSort, Page } from '../../services/jobs';
+
+const EMPTY_PAGE: Page<JobSummary> = { items: [], total: 0, page: 1, pageSize: 0, totalPages: 0 };
 
 export default function JobsPage() {
   const t = useMessages();
@@ -21,7 +22,7 @@ export default function JobsPage() {
   const path = useLocalePath();
   const { filters, update, reset } = useJobsFilters();
 
-  const [result, setResult] = useState<Page<JobWithCompany> | null>(null);
+  const [result, setResult] = useState<Page<JobSummary> | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -40,15 +41,16 @@ export default function JobsPage() {
       sort: filters.sort,
       page: filters.page,
       pageSize: PAGE_SIZE,
-      locale,
-    }).then((page) => {
-      if (active) setResult(page);
-    });
+    })
+      .catch(() => EMPTY_PAGE)
+      .then((page) => {
+        if (active) setResult(page);
+      });
 
     return () => {
       active = false;
     };
-  }, [filters, locale]);
+  }, [filters]);
 
   const cityOptions = filters.city ? [filters.city] : citiesOf(filters.province || undefined);
 
@@ -237,7 +239,7 @@ export default function JobsPage() {
             <caption className="sr-only">{t.jobs.title}</caption>
             <thead>
               <tr className="border-b border-outline">
-                {[t.jobs.title, t.jobs.city, t.jobs.salary, t.jobs.posted, t.jobs.language].map(
+                {[t.jobs.title, t.jobs.city, t.jobs.employmentType, t.jobs.posted, t.jobs.site].map(
                   (heading) => (
                     <th
                       key={heading}
@@ -251,7 +253,7 @@ export default function JobsPage() {
               </tr>
             </thead>
             <tbody>
-              {(result?.items ?? []).map(({ job, company }) => (
+              {(result?.items ?? []).map((job) => (
                 <tr
                   key={job.id}
                   className="border-b border-outline last:border-b-0 hover:bg-surface-subtle"
@@ -263,19 +265,19 @@ export default function JobsPage() {
                     >
                       {job.title[locale]}
                     </Link>
-                    <p className="font-body text-meta-sm text-text-muted">{company?.name}</p>
+                    <p className="font-body text-meta-sm text-text-muted">{job.company.name}</p>
                   </td>
                   <td className="px-5 py-4 font-body text-body-sm text-text-secondary">
                     {job.city}
                   </td>
-                  <td className="whitespace-nowrap px-5 py-4 font-mono text-meta-sm tabular-nums text-ink">
-                    {formatSalary(job.salaryMin, job.salaryMax, locale)}
+                  <td className="whitespace-nowrap px-5 py-4 font-body text-meta-sm text-ink">
+                    {t.enums.employmentType[job.type]}
                   </td>
                   <td className="whitespace-nowrap px-5 py-4 font-body text-meta-sm text-text-secondary">
-                    {postedLabel(job.postedDaysAgo, locale)}
+                    {postedLabel(job.postedAt, locale)}
                   </td>
-                  <td className="px-5 py-4">
-                    <LanguageTag language={job.language} />
+                  <td className="whitespace-nowrap px-5 py-4 font-body text-meta-sm text-text-secondary">
+                    {t.enums.site[job.site]}
                   </td>
                 </tr>
               ))}

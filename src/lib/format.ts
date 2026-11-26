@@ -1,6 +1,10 @@
 import type { Locale } from '../i18n';
 
-export function formatSalary(min: number, max: number, locale: Locale): string {
+export function formatSalary(min: number | null, max: number | null, locale: Locale): string {
+  if (min == null || max == null) {
+    return locale === 'id' ? 'Gaji tidak ditampilkan' : 'Salary not disclosed';
+  }
+
   const formatter = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', {
     maximumFractionDigits: 0,
   });
@@ -13,7 +17,14 @@ export function formatCount(value: number, locale: Locale): string {
   return new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB').format(value);
 }
 
-export function postedLabel(days: number, locale: Locale): string {
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export function daysSince(iso: string, now = Date.now()): number {
+  return Math.max(0, Math.floor((now - Date.parse(iso)) / DAY_MS));
+}
+
+export function postedLabel(postedAt: string, locale: Locale, now = Date.now()): string {
+  const days = daysSince(postedAt, now);
   if (days <= 0) return locale === 'id' ? 'Hari ini' : 'Today';
   if (days === 1) return locale === 'id' ? '1 hari lalu' : '1 day ago';
   if (days < 7) return locale === 'id' ? `${days} hari lalu` : `${days} days ago`;

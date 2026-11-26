@@ -3,30 +3,23 @@ import Container from '../../components/Container';
 import CompanyCard from '../../components/CompanyCard';
 import SectionHeading from '../../components/SectionHeading';
 import { useMessages } from '../../i18n';
-import { INDUSTRIES } from '../../data/dictionaries';
-import type { Industry } from '../../data/dictionaries';
-import type { Company } from '../../data/types';
-import { listCompanies, openRolesCount } from '../../services/jobs';
-
-type Row = { company: Company; openRoles: number };
+import { INDUSTRIES } from '../../services/types';
+import type { Company, Industry } from '../../services/types';
+import { listCompanies } from '../../services/jobs';
 
 export default function CompaniesPage() {
   const t = useMessages();
   const [industry, setIndustry] = useState<Industry | ''>('');
-  const [rows, setRows] = useState<Row[] | null>(null);
+  const [rows, setRows] = useState<Company[] | null>(null);
 
   useEffect(() => {
     let active = true;
 
-    listCompanies({ industry }).then(async (companies) => {
-      const withCounts = await Promise.all(
-        companies.map(async (company) => ({
-          company,
-          openRoles: await openRolesCount(company.id),
-        })),
-      );
-      if (active) setRows(withCounts);
-    });
+    listCompanies({ industry })
+      .catch(() => [])
+      .then((companies) => {
+        if (active) setRows(companies);
+      });
 
     return () => {
       active = false;
@@ -61,8 +54,8 @@ export default function CompaniesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {(rows ?? []).map((row) => (
-            <CompanyCard key={row.company.id} company={row.company} openRoles={row.openRoles} />
+          {(rows ?? []).map((company) => (
+            <CompanyCard key={company.id} company={company} />
           ))}
         </div>
       )}

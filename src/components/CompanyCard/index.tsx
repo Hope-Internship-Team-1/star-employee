@@ -1,15 +1,10 @@
 import { Link } from 'react-router-dom';
 import { format, useLocalePath, useMessages } from '../../i18n';
-import type { Company } from '../../data/types';
+import type { Company } from '../../services/types';
 import { resourcePath } from '../../lib/slug';
 
-export default function CompanyCard({
-  company,
-  openRoles,
-}: {
-  company: Company;
-  openRoles: number;
-}) {
+export default function CompanyCard({ company }: { company: Company }) {
+  const { openRoles } = company;
   const t = useMessages();
   const path = useLocalePath();
 

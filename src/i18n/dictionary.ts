@@ -1,3 +1,5 @@
+import type { Industry, WorkSite } from '../services/types';
+
 export type Locale = 'en' | 'id';
 
 export interface NavMessages {
@@ -56,6 +58,7 @@ export interface JobsMessages {
   company: string;
   city: string;
   salary: string;
+  site: string;
   actions: string;
   page: string;
   previous: string;
@@ -113,10 +116,8 @@ export interface StateMessages {
 
 export interface EnumsMessages {
   employmentType: Record<'full-time' | 'part-time' | 'contract' | 'internship', string>;
-  industry: Record<
-    'telecom' | 'finance' | 'ecommerce' | 'manufacturing' | 'travel' | 'electronics',
-    string
-  >;
+  industry: Record<Industry, string>;
+  site: Record<WorkSite, string>;
   workingLanguage: Record<'en' | 'id', string>;
   scale: Record<string, string>;
 }
@@ -198,6 +199,13 @@ export interface Messages {
     notFilled: string;
     completeResume: string;
     browseJobs: string;
+  };
+  errorPage: {
+    home: string;
+    jobs: string;
+    notFound: { title: string; body: string };
+    forbidden: { title: string; body: string };
+    server: { title: string; body: string };
   };
   errors: {
     emailInvalid: string;

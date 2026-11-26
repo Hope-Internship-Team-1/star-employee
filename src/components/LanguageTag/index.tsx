@@ -1,5 +1,5 @@
 import { useMessages } from '../../i18n';
-import type { WorkingLanguage } from '../../data/dictionaries';
+import type { WorkingLanguage } from '../../services/types';
 
 export default function LanguageTag({ language }: { language: WorkingLanguage }) {
   const t = useMessages();

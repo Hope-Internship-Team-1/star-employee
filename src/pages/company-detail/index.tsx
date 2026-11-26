@@ -7,8 +7,7 @@ import { useLocale, useLocalePath, useMessages } from '../../i18n';
 import { formatSalary, postedLabel } from '../../lib/format';
 import { idFromResourcePath, resourcePath } from '../../lib/slug';
 import { getCompany, listJobsOfCompany } from '../../services/jobs';
-import type { Company } from '../../data/types';
-import type { Job } from '../../data/jobs';
+import type { Company, Job } from '../../services/types';
 
 export default function CompanyPage() {
   const t = useMessages();
@@ -25,12 +24,12 @@ export default function CompanyPage() {
     let active = true;
 
     (async () => {
-      const found = id ? await getCompany(id) : undefined;
+      const found = id ? await getCompany(id).catch(() => undefined) : undefined;
       if (!active) return;
       setCompany(found ?? null);
 
       if (found) {
-        const open = await listJobsOfCompany(found.id);
+        const open = await listJobsOfCompany(found.id).catch(() => []);
         if (active) setJobs(open);
       }
     })();
@@ -124,7 +123,7 @@ export default function CompanyPage() {
                   <div className="flex min-w-0 flex-col gap-1">
                     <span className="font-display text-label-md text-ink">{job.title[locale]}</span>
                     <span className="font-body text-meta-sm text-text-secondary">
-                      {job.city} &middot; {postedLabel(job.postedDaysAgo, locale)}
+                      {job.city} &middot; {postedLabel(job.postedAt, locale)}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
