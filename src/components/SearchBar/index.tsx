@@ -7,12 +7,14 @@ import { PROVINCES } from '../../lib/geo';
 
 interface SearchBarProps {
   initialKeyword?: string;
+  initialProvince?: string;
   initialCity?: string;
   compact?: boolean;
 }
 
 export default function SearchBar({
   initialKeyword = '',
+  initialProvince = '',
   initialCity = '',
   compact,
 }: SearchBarProps) {
@@ -22,14 +24,31 @@ export default function SearchBar({
 
   // Seeded from the URL; the caller re-keys this component when the URL changes.
   const [keyword, setKeyword] = useState(initialKeyword);
+  const [province, setProvince] = useState(initialProvince);
   const [city, setCity] = useState(initialCity);
 
-  const cities = PROVINCES.flatMap((province) => province.cities);
+  function onLocationChange(value: string) {
+    if (value.startsWith('province:')) {
+      setProvince(value.slice('province:'.length));
+      setCity('');
+      return;
+    }
+    if (value.startsWith('city:')) {
+      const nextCity = value.slice('city:'.length);
+      const owner = PROVINCES.find((option) => option.cities.includes(nextCity));
+      setProvince(owner?.id ?? '');
+      setCity(nextCity);
+      return;
+    }
+    setProvince('');
+    setCity('');
+  }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const params = new URLSearchParams();
     if (keyword.trim()) params.set('kw', keyword.trim());
+    if (province) params.set('province', province);
     if (city) params.set('city', city);
 
     const query = params.toString();
@@ -40,45 +59,53 @@ export default function SearchBar({
     <form
       role="search"
       onSubmit={onSubmit}
+      aria-label={t.home.searchPlaceholder}
       className={[
-        'flex w-full flex-col items-stretch gap-2 rounded-card border border-outline bg-surface-raised p-2 shadow-[0_1px_2px_rgba(36,33,29,0.05)] sm:flex-row sm:items-center',
+        'flex w-full flex-col items-stretch gap-grid-2 rounded-card border-2 border-dark-tan bg-surface-raised p-grid-2 sm:flex-row sm:items-center',
         compact ? '' : 'max-w-2xl',
       ].join(' ')}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-3 px-3">
-        <SearchIcon size={16} className="shrink-0 text-text-secondary" />
+      <div className="flex min-w-0 flex-1 items-center gap-grid-3 px-grid-3">
+        <SearchIcon size={16} className="shrink-0 text-primary" />
         <input
           type="search"
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
           aria-label={t.home.searchPlaceholder}
           placeholder={t.home.searchPlaceholder}
-          className="w-full border-0 bg-transparent py-2.5 font-body text-body-md text-ink placeholder:text-text-secondary focus:outline-none"
+          className="w-full border-0 bg-transparent py-grid-2 font-body text-body-md text-on-surface placeholder:text-text-muted focus:outline-none"
         />
       </div>
 
-      <div className="hidden h-8 w-px shrink-0 bg-outline sm:block" />
+      <div aria-hidden="true" className="hidden h-7 w-px shrink-0 bg-outline sm:block" />
 
-      <div className="flex items-center gap-2 px-3 sm:w-48 sm:shrink-0">
-        <MapPinIcon size={16} className="shrink-0 text-text-secondary" />
+      <div className="flex items-center gap-grid-2 px-grid-3 sm:w-56 sm:shrink-0">
+        <MapPinIcon size={16} className="shrink-0 text-primary" />
         <select
-          value={city}
-          onChange={(event) => setCity(event.target.value)}
-          aria-label={t.jobs.filterCity}
-          className="w-full cursor-pointer border-0 bg-transparent py-2.5 font-body text-body-md text-ink focus:outline-none"
+          value={city ? `city:${city}` : province ? `province:${province}` : ''}
+          onChange={(event) => onLocationChange(event.target.value)}
+          aria-label={t.jobs.filterProvince + ' / ' + t.jobs.filterCity}
+          className="w-full cursor-pointer border-0 bg-transparent py-grid-2 font-body text-body-sm text-on-surface focus:outline-none"
         >
-          <option value="">{t.home.allCities}</option>
-          {cities.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
+          <option value="">{t.jobs.allLocations}</option>
+          {PROVINCES.map((option) => (
+            <optgroup key={option.id} label={option.name}>
+              <option value={`province:${option.id}`}>
+                {t.jobs.allProvincesOf.replace('{name}', option.name)}
+              </option>
+              {option.cities.map((option2) => (
+                <option key={option2} value={`city:${option2}`}>
+                  {option2}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
       </div>
 
       <button
         type="submit"
-        className="inline-flex shrink-0 items-center justify-center rounded-control bg-primary px-7 py-3 font-display text-label-md text-on-primary transition-colors duration-150 ease-paper hover:bg-primary-hover"
+        className="inline-flex shrink-0 items-center justify-center rounded-control bg-primary px-card-pad-lg py-grid-2 font-label text-label-md text-on-primary transition-colors duration-hover-colour ease-hover-colour hover:bg-primary-hover"
       >
         {t.jobs.search}
       </button>
