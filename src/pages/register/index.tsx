@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Form, Input } from 'antd';
-import { AsideSteps } from '../../components/AuthAside';
+import { Form, Input } from 'antd';
 import AuthLayout from '../../components/AuthLayout';
+import AuthStepper from '../../components/AuthStepper';
 import FormError from '../../components/FormError';
-import { fieldClassName } from '../../components/fieldClassName';
+import { bodyFieldClassName } from '../../components/fieldClassName';
+import { primaryButtonClassName } from '../../components/buttonClassName';
 import { useAuthFlow } from '../../context/authFlowContext';
 import { useLocalePath, useMessages } from '../../i18n';
 import { register } from '../../services/auth';
@@ -39,8 +40,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <AuthLayout panel={<AsideSteps current={1} />}>
-      <h1 className="font-display text-[2.5rem] leading-none tracking-tight text-ink">
+    <AuthLayout>
+      <AuthStepper current={1} />
+
+      <h1 className="font-page text-page-lg-mobile text-on-surface lg:text-page-lg">
         {t.register.step1Title}
       </h1>
 
@@ -50,7 +53,7 @@ export default function RegisterPage() {
         requiredMark={false}
         onValuesChange={() => setError(null)}
         onFinish={onFinish}
-        className="mt-8 [&_.ant-form-item]:mb-4"
+        className="flex flex-col gap-grid-4"
       >
         <Form.Item
           label={t.register.emailLabel}
@@ -64,19 +67,27 @@ export default function RegisterPage() {
             autoComplete="email"
             inputMode="email"
             placeholder={t.login.emailPlaceholder}
-            className={fieldClassName}
+            className={bodyFieldClassName}
           />
         </Form.Item>
 
         {error && <FormError message={t.errors[error]} />}
 
-        <Button type="primary" htmlType="submit" block loading={submitting} className="!h-10">
-          {t.register.continue}
-        </Button>
+        <button
+          type="submit"
+          disabled={submitting}
+          aria-busy={submitting}
+          className={primaryButtonClassName}
+        >
+          {submitting ? t.register.submitting : t.register.continue}
+        </button>
       </Form>
 
-      <p className="mt-6 text-sm text-ink-soft">
-        <Link to={path('/login')} className="text-clay hover:underline">
+      <p className="font-body text-body-sm text-text-secondary">
+        <Link
+          to={path('/login')}
+          className="inline-flex min-h-11 items-center rounded-control font-label text-label-md text-primary transition-colors duration-hover-colour ease-hover-colour hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
           {t.register.backToLogin}
         </Link>
       </p>
