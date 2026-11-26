@@ -6,7 +6,7 @@ import AuthLayout from '../../../components/AuthLayout';
 import FormError from '../../../components/FormError';
 import { fieldClassName } from '../../../components/fieldClassName';
 import { useAuthFlow } from '../../../context/authFlowContext';
-import { format, useLocale, useMessages } from '../../../i18n';
+import { format, useLocalePath, useMessages } from '../../../i18n';
 import { requestOtp, verifyOtp } from '../../../services/auth';
 import { errorKey } from '../../../services/errors';
 import type { ErrorKey } from '../../../services/errors';
@@ -17,7 +17,7 @@ interface CodeValues {
 
 export default function RegisterCodePage() {
   const t = useMessages();
-  const { locale } = useLocale();
+  const path = useLocalePath();
   const navigate = useNavigate();
   const { email } = useAuthFlow();
   const [submitting, setSubmitting] = useState(false);
@@ -53,7 +53,7 @@ export default function RegisterCodePage() {
 
     try {
       await verifyOtp(email, values.code);
-      navigate(`/${locale}/register/setup`);
+      navigate(path('/register/setup'));
     } catch (caught) {
       setError(errorKey(caught, 'verify'));
     } finally {
@@ -61,7 +61,7 @@ export default function RegisterCodePage() {
     }
   }
 
-  if (!email) return <Navigate to={`/${locale}/register`} replace />;
+  if (!email) return <Navigate to={path('/register')} replace />;
 
   return (
     <AuthLayout panel={<AsideSteps current={2} />}>

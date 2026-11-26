@@ -6,7 +6,7 @@ import AuthLayout from '../../../components/AuthLayout';
 import FormError from '../../../components/FormError';
 import { fieldClassName } from '../../../components/fieldClassName';
 import { useAuthFlow } from '../../../context/authFlowContext';
-import { useLocale, useMessages } from '../../../i18n';
+import { useLocalePath, useMessages } from '../../../i18n';
 import { errorKey } from '../../../services/errors';
 import { completeRegistration } from '../../../services/registration';
 import { isPasswordLengthValid, passwordsMatch } from '../../../services/validation';
@@ -20,7 +20,7 @@ interface SetupValues {
 
 export default function RegisterSetupPage() {
   const t = useMessages();
-  const { locale } = useLocale();
+  const path = useLocalePath();
   const navigate = useNavigate();
   const { email, reset } = useAuthFlow();
   const [form] = Form.useForm<SetupValues>();
@@ -34,7 +34,7 @@ export default function RegisterSetupPage() {
     try {
       await completeRegistration({ name: values.name, password: values.password });
       reset();
-      navigate(`/${locale}/welcome`, { replace: true });
+      navigate(path('/welcome'), { replace: true });
     } catch (caught) {
       setError(errorKey(caught));
     } finally {
@@ -42,7 +42,7 @@ export default function RegisterSetupPage() {
     }
   }
 
-  if (!email) return <Navigate to={`/${locale}/register`} replace />;
+  if (!email) return <Navigate to={path('/register')} replace />;
 
   return (
     <AuthLayout panel={<AsideSteps current={3} />}>

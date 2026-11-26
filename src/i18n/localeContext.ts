@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import type { Locale, Messages } from './dictionary';
 import { en } from './en';
 import { id } from './id';
+import { localePath } from './paths';
 
 export const dictionaries: Record<Locale, Messages> = { en, id };
 
@@ -21,4 +22,9 @@ export function useLocale(): LocaleState {
 
 export function useMessages(): Messages {
   return dictionaries[useContext(LocaleContext).locale];
+}
+
+export function useLocalePath(): (path?: string) => string {
+  const { locale } = useLocale();
+  return (path?: string) => localePath(locale, path);
 }

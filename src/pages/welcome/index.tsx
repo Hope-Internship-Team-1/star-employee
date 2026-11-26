@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'antd';
 import { AsideDone } from '../../components/AuthAside';
 import AuthLayout from '../../components/AuthLayout';
-import { format, useLocale, useMessages } from '../../i18n';
+import { format, useLocalePath, useMessages } from '../../i18n';
 import { getMe } from '../../services/auth';
 import { getResumeStatus } from '../../services/resume';
 
 export default function WelcomePage() {
   const t = useMessages();
-  const { locale } = useLocale();
+  const path = useLocalePath();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const resume = getResumeStatus();
@@ -37,7 +37,7 @@ export default function WelcomePage() {
 
   // Resume and job routes are not built yet.
   function goTo(target: string) {
-    navigate(target);
+    navigate(path(target));
   }
 
   return (
@@ -59,10 +59,10 @@ export default function WelcomePage() {
       </ul>
 
       <div className="mt-6 flex flex-col gap-3">
-        <Button type="primary" block className="!h-10" onClick={() => goTo(`/${locale}`)}>
+        <Button type="primary" block className="!h-10" onClick={() => goTo('/my-profile')}>
           {t.welcome.completeResume}
         </Button>
-        <Button block className="!h-10 border-line" onClick={() => goTo(`/${locale}`)}>
+        <Button block className="!h-10 border-line" onClick={() => goTo('/jobs')}>
           {t.welcome.browseJobs}
         </Button>
       </div>
