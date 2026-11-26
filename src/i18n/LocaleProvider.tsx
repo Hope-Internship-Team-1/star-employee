@@ -1,14 +1,17 @@
-import { useEffect, useMemo } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import type { Locale } from './dictionary';
 import { LocaleContext } from './localeContext';
-import { isLocale, storeLocale } from './storage';
+import { isLocale, replaceLocale } from './paths';
+import { readStoredLocale, storeLocale } from './storage';
 
 export function LocaleProvider() {
-  const params = useParams();
-  const locale: Locale = isLocale(params.locale) ? params.locale : 'en';
+  const location = useLocation();
   const navigate = useNavigate();
-  const { pathname, search } = useLocation();
+  const [fallbackLocale, setFallbackLocale] = useState<Locale>(readStoredLocale);
+
+  const urlLocale = location.pathname.split('/')[1];
+  const locale = isLocale(urlLocale) ? urlLocale : fallbackLocale;
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -18,9 +21,16 @@ export function LocaleProvider() {
   const value = useMemo(
     () => ({
       locale,
-      setLocale: (next: Locale) => navigate(pathname.replace(/^\/[^/]+/, `/${next}`) + search),
+      setLocale: (next: Locale) => {
+        setFallbackLocale(next);
+        if (isLocale(urlLocale)) {
+          navigate(`${replaceLocale(location.pathname, next)}${location.search}${location.hash}`, {
+            replace: true,
+          });
+        }
+      },
     }),
-    [locale, navigate, pathname, search],
+    [locale, urlLocale, navigate, location.pathname, location.search, location.hash],
   );
 
   return (

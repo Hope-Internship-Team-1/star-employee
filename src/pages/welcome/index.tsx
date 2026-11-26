@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/AuthLayout';
 import { primaryButtonClassName, secondaryButtonClassName } from '../../components/buttonClassName';
-import { format, useLocale, useMessages } from '../../i18n';
+import { format, useLocalePath, useMessages } from '../../i18n';
 import { getMe } from '../../services/auth';
 import { getResumeStatus } from '../../services/resume';
 
 export default function WelcomePage() {
   const t = useMessages();
-  const { locale } = useLocale();
+  const path = useLocalePath();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const resume = getResumeStatus();
@@ -64,14 +64,14 @@ export default function WelcomePage() {
         <button
           type="button"
           className={primaryButtonClassName}
-          onClick={() => navigate(`/${locale}`)}
+          onClick={() => navigate(path('/my-profile'))}
         >
           {t.welcome.completeResume}
         </button>
         <button
           type="button"
           className={secondaryButtonClassName}
-          onClick={() => navigate(`/${locale}`)}
+          onClick={() => navigate(path('/jobs'))}
         >
           {t.welcome.browseJobs}
         </button>

@@ -7,7 +7,7 @@ import FormError from '../../components/FormError';
 import { bodyFieldClassName } from '../../components/fieldClassName';
 import { primaryButtonClassName } from '../../components/buttonClassName';
 import { useAuthFlow } from '../../context/authFlowContext';
-import { useLocale, useMessages } from '../../i18n';
+import { useLocalePath, useMessages } from '../../i18n';
 import { register } from '../../services/auth';
 import { errorKey } from '../../services/errors';
 import type { ErrorKey } from '../../services/errors';
@@ -18,7 +18,7 @@ interface EmailValues {
 
 export default function RegisterPage() {
   const t = useMessages();
-  const { locale } = useLocale();
+  const path = useLocalePath();
   const navigate = useNavigate();
   const { setEmail } = useAuthFlow();
   const [submitting, setSubmitting] = useState(false);
@@ -31,7 +31,7 @@ export default function RegisterPage() {
     try {
       await register({ email: values.email });
       setEmail(values.email);
-      navigate(`/${locale}/register/code`);
+      navigate(path('/register/code'));
     } catch (caught) {
       setError(errorKey(caught));
     } finally {
@@ -85,7 +85,7 @@ export default function RegisterPage() {
 
       <p className="font-body text-body-sm text-text-secondary">
         <Link
-          to={`/${locale}/login`}
+          to={path('/login')}
           className="inline-flex min-h-11 items-center rounded-control font-label text-label-md text-primary transition-colors duration-hover-colour ease-hover-colour hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           {t.register.backToLogin}

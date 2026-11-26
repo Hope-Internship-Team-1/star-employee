@@ -1,12 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  /* Ant Design strips input outlines with its own reset, so the global ring needs priority. */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-surface font-sans text-body-md text-ink antialiased;
+  }
+
+  /* Single focus mechanism: Ant Design resets input outlines at higher specificity, so the ring needs priority. */
   :focus-visible {
     outline: 2px solid theme('colors.primary') !important;
     outline-offset: 2px !important;
+  }
+
+  ::selection {
+    background: #f9ece6;
+    color: #24211d;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -17,25 +41,43 @@
     letter-spacing: -0.035em;
     font-weight: 500;
   }
+}
+
+@layer utilities {
+  .page-enter {
+    animation: page-enter 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 
   .es-page-enter {
     animation: es-enter 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-}
 
-@keyframes es-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+  @keyframes es-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .es-page-enter {
-    animation: none;
+  @media (prefers-reduced-motion: reduce) {
+    .page-enter,
+    .es-page-enter {
+      animation: none;
+    }
   }
 }

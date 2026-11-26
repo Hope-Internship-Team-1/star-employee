@@ -4,16 +4,13 @@ export const antdTheme: ThemeConfig = {
   token: {
     colorPrimary: '#B4532D',
     colorLink: '#B4532D',
-    colorInfo: '#B4532D',
-    colorError: '#964322',
     colorText: '#24211D',
     colorTextSecondary: '#6B645C',
-    colorTextPlaceholder: '#948B80',
     colorBorder: '#E7E3DD',
     colorBgContainer: '#FFFFFF',
+    colorBgBase: '#FAF7F2',
     borderRadius: 8,
-    fontFamily: 'Instrument Sans, sans-serif',
-    fontSize: 15,
+    fontFamily: '"Instrument Sans", "DM Sans", system-ui, sans-serif',
     controlHeight: 38,
   },
   components: {

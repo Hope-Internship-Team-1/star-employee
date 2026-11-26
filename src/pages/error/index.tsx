@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import Brand from '../../components/Brand';
 import LocaleSwitch from '../../components/LocaleSwitch';
-import { useLocale, useMessages } from '../../i18n';
+import { useLocalePath, useMessages } from '../../i18n';
 
 export default function ErrorPage() {
   const t = useMessages();
-  const { locale } = useLocale();
+  const path = useLocalePath();
 
   return (
     <div className="es-page-enter flex min-h-dvh flex-col bg-surface px-page-edge py-card-pad sm:py-section-md">
@@ -18,7 +18,7 @@ export default function ErrorPage() {
         <p className="font-mono text-mono-meta text-text-secondary">{t.notFound.code}</p>
         <h1 className="font-page text-page-lg text-on-surface">{t.notFound.message}</h1>
         <Link
-          to={`/${locale}/login`}
+          to={path('/login')}
           className="inline-flex min-h-11 items-center self-start rounded-control font-label text-label-md text-primary transition-colors duration-hover-colour ease-hover-colour hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           {t.register.backToLogin}

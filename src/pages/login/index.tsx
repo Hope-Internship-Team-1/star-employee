@@ -7,7 +7,7 @@ import ErrorBanner from '../../components/ErrorBanner';
 import { bodyFieldClassName, monoFieldClassName } from '../../components/fieldClassName';
 import { primaryButtonClassName } from '../../components/buttonClassName';
 import { AlertCircleIcon } from '../../components/Icons';
-import { format, useLocale, useMessages } from '../../i18n';
+import { format, useLocalePath, useMessages } from '../../i18n';
 import { loginWithPassword, requestOtp, verifyOtp } from '../../services/auth';
 import { errorKey } from '../../services/errors';
 import type { ErrorKey } from '../../services/errors';
@@ -28,7 +28,7 @@ interface CodeValues extends EmailValues {
 
 export default function LoginPage() {
   const t = useMessages();
-  const { locale } = useLocale();
+  const path = useLocalePath();
   const navigate = useNavigate();
   const [passwordForm] = Form.useForm<PasswordValues>();
   const [codeForm] = Form.useForm<CodeValues>();
@@ -101,7 +101,7 @@ export default function LoginPage() {
 
     try {
       await loginWithPassword(values.email, values.password);
-      navigate(`/${locale}`, { replace: true });
+      navigate(path(), { replace: true });
     } catch (caught) {
       setError(errorKey(caught, 'login'));
     } finally {
@@ -139,7 +139,7 @@ export default function LoginPage() {
 
     try {
       await verifyOtp(values.email, values.code);
-      navigate(`/${locale}`, { replace: true });
+      navigate(path(), { replace: true });
     } catch (caught) {
       setError(errorKey(caught, 'verify'));
     } finally {
@@ -364,7 +364,7 @@ export default function LoginPage() {
         <p className="font-body text-body-sm text-text-secondary">
           {t.login.noAccount}{' '}
           <Link
-            to={`/${locale}/register`}
+            to={path('/register')}
             className="ml-grid-1 inline-flex min-h-11 items-center rounded-control font-label text-label-md text-primary transition-colors duration-hover-colour ease-hover-colour hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {t.login.registerLink}

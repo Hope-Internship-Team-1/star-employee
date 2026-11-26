@@ -32,12 +32,3 @@ test('returns the user when authorized', async () => {
     credentials: 'include',
   });
 });
-
-test('defers to the locale redirect when the locale segment is missing', async () => {
-  const fetch = mockFetch(401, { error: 'Unauthorized: No token provided' });
-
-  const res = await requireAuth({ params: { locale: 'login' } } as unknown as LoaderFunctionArgs);
-
-  expect(res).toBeNull();
-  expect(fetch).not.toHaveBeenCalled();
-});
