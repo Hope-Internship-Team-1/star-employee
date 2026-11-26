@@ -1,31 +1,31 @@
-import { useEffect, useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useEffect, useMemo } from 'react';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { Locale } from './dictionary';
 import { LocaleContext } from './localeContext';
+import { isLocale, storeLocale } from './storage';
 
-const STORAGE_KEY = 'star.locale';
-
-function readStoredLocale(): Locale {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === 'id' ? 'id' : 'en';
-  } catch {
-    return 'en';
-  }
-}
-
-export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>(readStoredLocale);
+export function LocaleProvider() {
+  const params = useParams();
+  const locale: Locale = isLocale(params.locale) ? params.locale : 'en';
+  const navigate = useNavigate();
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
     document.documentElement.lang = locale;
-    try {
-      localStorage.setItem(STORAGE_KEY, locale);
-    } catch {
-      // Storage can be unavailable in private mode; the UI still works.
-    }
+    storeLocale(locale);
   }, [locale]);
 
-  const value = useMemo(() => ({ locale, setLocale }), [locale]);
+  const value = useMemo(
+    () => ({
+      locale,
+      setLocale: (next: Locale) => navigate(pathname.replace(/^\/[^/]+/, `/${next}`) + search),
+    }),
+    [locale, navigate, pathname, search],
+  );
 
-  return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
+  return (
+    <LocaleContext.Provider value={value}>
+      <Outlet />
+    </LocaleContext.Provider>
+  );
 }
