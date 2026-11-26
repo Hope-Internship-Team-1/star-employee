@@ -8,6 +8,14 @@ Rules for anyone (human or AI agent) writing code in this repo. Full stack and c
 - Read them from env via `import.meta.env.VITE_*` (e.g. `import.meta.env.VITE_API_BASE_URL`).
 - New env variable: add it to `.env.example` with an empty or dummy value. Never commit `.env`.
 
+## Session
+
+- Login state comes only from `GET /users/me` (`{ authenticated, user }`, 401 = guest). Never infer it from another endpoint failing.
+- Components: `useSession()` from `src/hooks/useSession.ts`. `undefined` = still checking, `null` = guest, `User` = signed in. Wait until it is not `undefined` before calling anything whose endpoint depends on login.
+- Pick the endpoint by session, e.g. `/jobs/recommendations` for users, `/jobs/recommendations/random` for guests. Never call a login-required endpoint for a guest.
+- Pages that need login: put the route under the `requireAuth` loader (it re-checks `/users/me` on every navigation).
+- Anything that changes the session (login, OTP verify, logout, profile update) must update the store in `src/services/session.ts` (`clearSession` / `setSession`). The functions in `src/services/auth.ts` already do.
+
 ## Styling
 
 - Use Tailwind classes in JSX for all styling.

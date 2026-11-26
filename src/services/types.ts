@@ -57,6 +57,7 @@ export type EmploymentType = (typeof EMPLOYMENT_TYPES)[number];
 export type WorkingLanguage = 'en' | 'id';
 export type WorkSite = 'onsite' | 'hybrid' | 'remote';
 export type JobStatus = 'open' | 'closed';
+export type JobPosition = 'intern' | 'entry' | 'staff' | 'senior' | 'supervisor' | 'manager';
 
 export const SALARY_BANDS = [10_000_000, 15_000_000, 20_000_000] as const;
 export const PAGE_SIZE = 10;
@@ -88,11 +89,16 @@ export interface JobSummary {
   title: LocalizedText;
   type: EmploymentType;
   site: WorkSite;
+  position: JobPosition;
   city: string;
+  salaryMin: number | null;
+  salaryMax: number | null;
   postedAt: string;
   company: CompanySummary;
-  salaryMin?: number | null;
-  salaryMax?: number | null;
+}
+
+export interface RecommendedJob extends JobSummary {
+  index: number;
 }
 
 export interface Job {

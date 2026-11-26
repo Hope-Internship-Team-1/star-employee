@@ -7,6 +7,7 @@ import type {
   JobDetail,
   JobStatus,
   JobSummary,
+  RecommendedJob,
   WorkingLanguage,
 } from './types';
 
@@ -63,6 +64,14 @@ export function listJobs(params: {
     pageSize,
   });
   return apiFetch(`/jobs${search}`);
+}
+
+export function listRecommendedJobs(limit = 5): Promise<RecommendedJob[]> {
+  return apiFetch(`/jobs/recommendations${toQueryString({ limit })}`);
+}
+
+export function listRandomJobs(limit = 5): Promise<JobSummary[]> {
+  return apiFetch(`/jobs/recommendations/random${toQueryString({ limit })}`);
 }
 
 export function getJob(id: string): Promise<JobDetail | undefined> {
