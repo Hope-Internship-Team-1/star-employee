@@ -2,14 +2,15 @@ import type { ThemeConfig } from 'antd';
 
 export const antdTheme: ThemeConfig = {
   token: {
-    colorPrimary: '#B5521F',
-    colorLink: '#B5521F',
-    colorText: '#2A1E12',
-    colorTextSecondary: '#6B5F52',
-    colorBorder: '#E8E0D3',
+    colorPrimary: '#B4532D',
+    colorLink: '#B4532D',
+    colorText: '#24211D',
+    colorTextSecondary: '#6B645C',
+    colorBorder: '#E7E3DD',
     colorBgContainer: '#FFFFFF',
-    borderRadius: 4,
-    fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
+    colorBgBase: '#FAF7F2',
+    borderRadius: 8,
+    fontFamily: '"Instrument Sans", "DM Sans", system-ui, sans-serif',
     controlHeight: 38,
   },
 };

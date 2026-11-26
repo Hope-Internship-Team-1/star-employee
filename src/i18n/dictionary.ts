@@ -1,11 +1,158 @@
 export type Locale = 'en' | 'id';
 
+export interface NavMessages {
+  home: string;
+  jobs: string;
+  companies: string;
+  classes: string;
+  messages: string;
+  profile: string;
+  login: string;
+  logout: string;
+}
+
+export interface HomeMessages {
+  title: string;
+  lead: string;
+  searchPlaceholder: string;
+  allCities: string;
+  popular: string;
+  meterTitle: string;
+  meterValue: string;
+  quickActionTitle: string;
+  quickActions: {
+    resume: string;
+    status: string;
+    classes: string;
+    experience: string;
+  };
+  hotJobs: string;
+  featured: string;
+  viewAll: string;
+}
+
+export interface JobsMessages {
+  title: string;
+  filterIndustry: string;
+  filterProvince: string;
+  filterCity: string;
+  filterType: string;
+  filterLanguage: string;
+  filterSalary: string;
+  all: string;
+  search: string;
+  sort: string;
+  sortDefault: string;
+  sortNewest: string;
+  sortSalary: string;
+  filters: string;
+  pagination: string;
+  reset: string;
+  foundOne: string;
+  foundMany: string;
+  posted: string;
+  language: string;
+  employmentType: string;
+  company: string;
+  city: string;
+  salary: string;
+  actions: string;
+  page: string;
+  previous: string;
+  next: string;
+  empty: string;
+  clearSearch: string;
+}
+
+export interface JobDetailMessages {
+  responsibilities: string;
+  requirements: string;
+  companyCard: string;
+  industry: string;
+  size: string;
+  founded: string;
+  address: string;
+  about: string;
+  allJobs: string;
+  similar: string;
+  completeness: string;
+  completenessBody: string;
+  completeResume: string;
+  apply: string;
+  applied: string;
+  closed: string;
+  save: string;
+  saved: string;
+  negotiable: string;
+  notFound: string;
+  posted: string;
+  experience: string;
+  education: string;
+}
+
+export interface CompaniesMessages {
+  title: string;
+  openRolesOne: string;
+  openRolesMany: string;
+  filterIndustry: string;
+  empty: string;
+  companyProfile: string;
+  allJobsOf: string;
+  noJobs: string;
+  browseJobs: string;
+  employees: string;
+  since: string;
+}
+
+export interface StateMessages {
+  loading: string;
+  error: string;
+  retry: string;
+  empty: string;
+}
+
+export interface EnumsMessages {
+  employmentType: Record<'full-time' | 'part-time' | 'contract' | 'internship', string>;
+  industry: Record<
+    'telecom' | 'finance' | 'ecommerce' | 'manufacturing' | 'travel' | 'electronics',
+    string
+  >;
+  workingLanguage: Record<'en' | 'id', string>;
+  scale: Record<string, string>;
+}
+
 export interface Messages {
   brand: {
     name: string;
+    wordmarkAlt: string;
   };
   locale: {
     label: string;
+  };
+  nav: NavMessages;
+  home: HomeMessages;
+  jobs: JobsMessages;
+  jobDetail: JobDetailMessages;
+  companies: CompaniesMessages;
+  state: StateMessages;
+  enums: EnumsMessages;
+  footer: {
+    tagline: string;
+    platform: string;
+    company: string;
+    resources: string;
+    about: string;
+    partners: string;
+    terms: string;
+    faq: string;
+    help: string;
+    privacy: string;
+  };
+  status: {
+    delivered: string;
+    pending: string;
+    interview: string;
+    notSuitable: string;
   };
   login: {
     title: string;
