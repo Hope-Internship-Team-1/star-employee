@@ -35,7 +35,7 @@ export default function CompaniesPage() {
 
   return (
     <Container className="py-12">
-      <SectionHeading title={t.companies.title} body={t.companies.lead} />
+      <SectionHeading title={t.companies.title} />
 
       <label className="flex max-w-xs flex-col gap-1.5 pb-8">
         <span className="font-body text-meta-sm text-text-secondary">

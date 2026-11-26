@@ -19,9 +19,8 @@ export const id: Messages = {
     logout: 'Keluar',
   },
   home: {
-    badge: 'Karier IT dwibahasa, Indonesia',
     title: 'Temukan kerja IT di Indonesia, dalam bahasamu',
-    lead: 'Susun resume 11 modul, buka akses melamar di 70%, dan pantau tiap tahap dari Terkirim sampai Diundang wawancara.',
+    lead: 'Susun resume 11 modul, melamar setelah mencapai 70%, dan pantau tiap lamaran dari Terkirim sampai Diundang wawancara.',
     searchPlaceholder: 'Posisi, keahlian, atau perusahaan',
     allCities: 'Semua kota',
     popular: 'Populer:',
@@ -29,32 +28,17 @@ export const id: Messages = {
     meterValue: 'Masih di bawah batas 70%',
     quickActionTitle: 'Mulai dari posisimu sekarang',
     quickActions: {
-      resume: {
-        title: 'Resume 11 modul',
-        body: 'Capai kelengkapan 70% untuk mulai melamar.',
-      },
-      status: {
-        title: 'Status langsung',
-        body: 'Empat tahap yang jelas di setiap lamaran.',
-      },
-      classes: {
-        title: 'Kelas karier',
-        body: 'Persiapan wawancara dan tinjauan resume untuk lulusan baru.',
-      },
-      experience: {
-        title: 'Bagikan pengalaman',
-        body: 'Catatan wawancara nyata dari sesama talenta IT.',
-      },
+      resume: 'Resume 11 modul',
+      status: 'Status lamaran',
+      classes: 'Kelas karier',
+      experience: 'Bagikan pengalaman',
     },
     hotJobs: 'Lowongan pilihan',
-    hotJobsBody: 'Lowongan IT junior di seluruh Indonesia dengan gaji dan bahasa kerja yang ditulis di depan.',
     featured: 'Perusahaan pilihan',
-    featuredBody: 'Tim engineering Indonesia yang merekrut talenta kampus.',
     viewAll: 'Lihat semua',
   },
   jobs: {
     title: 'Lowongan',
-    lead: 'Setiap lowongan mencantumkan kisaran gaji dan bahasa kerjanya sebelum kamu buka.',
     filterIndustry: 'Industri',
     filterProvince: 'Provinsi',
     filterCity: 'Kota',
@@ -89,7 +73,6 @@ export const id: Messages = {
     responsibilities: 'Tanggung jawab',
     requirements: 'Persyaratan',
     companyCard: 'Perusahaan',
-    view: 'Lihat',
     industry: 'Industri',
     size: 'Ukuran perusahaan',
     founded: 'Berdiri',
@@ -113,11 +96,10 @@ export const id: Messages = {
   },
   companies: {
     title: 'Perusahaan',
-    lead: 'Perusahaan yang merekrut di Indonesia, lengkap dengan industri, kota, dan ukuran timnya.',
     openRolesOne: '{n} lowongan terbuka',
     openRolesMany: '{n} lowongan terbuka',
     filterIndustry: 'Industri',
-    empty: 'Tidak ada perusahaan ditemukan.',
+    empty: 'Tidak ada perusahaan ditemukan. Coba industri lain.',
     companyProfile: 'Profil perusahaan',
     allJobsOf: 'Lowongan terbuka',
     noJobs: 'Perusahaan ini belum punya lowongan terbuka.',
@@ -159,7 +141,6 @@ export const id: Messages = {
     },
   },
   footer: {
-    lines: ['Temukan kerja IT.', 'Pantau tiap tahap.', 'Dalam bahasamu.'],
     tagline:
       'Bintang Karier, platform karier IT dwibahasa untuk mahasiswa dan lulusan baru Indonesia.',
     platform: 'Platform',
@@ -214,7 +195,7 @@ export const id: Messages = {
     backToLogin: 'Kembali ke halaman masuk',
   },
   welcome: {
-    title: 'Kamu sudah masuk!',
+    title: 'Akun dibuat',
     greeting: 'Selamat datang, {name}',
     subtitle: 'Dua bagian masih kosong.',
     education: 'Pendidikan',

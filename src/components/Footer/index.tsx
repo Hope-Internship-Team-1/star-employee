@@ -36,12 +36,7 @@ export default function Footer() {
   return (
     <footer className="mt-16 overflow-hidden bg-primary text-on-primary">
       <Container className="grid grid-cols-1 gap-12 pb-10 pt-16 lg:grid-cols-12">
-        <div className="flex flex-col justify-between gap-10 lg:col-span-6">
-          <div className="font-display text-page-lg">
-            {t.footer.lines.map((line) => (
-              <div key={line}>{line}</div>
-            ))}
-          </div>
+        <div className="flex flex-col justify-end gap-10 lg:col-span-6">
           <p className="max-w-md font-body text-body-sm">{t.footer.tagline}</p>
         </div>
 

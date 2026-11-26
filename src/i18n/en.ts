@@ -19,9 +19,8 @@ export const en: Messages = {
     logout: 'Log out',
   },
   home: {
-    badge: 'Bilingual IT careers, Indonesia',
     title: 'Find IT work in Indonesia, in your language',
-    lead: 'Build a structured 11-module resume, unlock applications at 70%, and track every stage from Delivered to Interview invited.',
+    lead: 'Build an 11-module resume, apply once you reach 70%, and track each application from Delivered to Interview invited.',
     searchPlaceholder: 'Job title, skill or company',
     allCities: 'All cities',
     popular: 'Popular:',
@@ -29,33 +28,17 @@ export const en: Messages = {
     meterValue: 'Below the 70% gate',
     quickActionTitle: 'Start where you are',
     quickActions: {
-      resume: {
-        title: '11-module resume',
-        body: 'Reach 70% completeness to unlock applications.',
-      },
-      status: {
-        title: 'Live status',
-        body: 'Four clear stages on every application.',
-      },
-      classes: {
-        title: 'Career classes',
-        body: 'Interview prep and resume reviews for graduates.',
-      },
-      experience: {
-        title: 'Share experience',
-        body: 'Real interview notes from junior IT peers.',
-      },
+      resume: '11-module resume',
+      status: 'Application status',
+      classes: 'Career classes',
+      experience: 'Share experience',
     },
     hotJobs: 'Hot jobs',
-    hotJobsBody:
-      'Junior IT roles across Indonesia with the salary and working language stated up front.',
     featured: 'Featured employers',
-    featuredBody: 'Indonesian engineering teams hiring campus talent.',
     viewAll: 'View all',
   },
   jobs: {
     title: 'Jobs',
-    lead: 'Every listing states its salary range and working language before you open it.',
     filterIndustry: 'Industry',
     filterProvince: 'Province',
     filterCity: 'City',
@@ -90,7 +73,6 @@ export const en: Messages = {
     responsibilities: 'Responsibilities',
     requirements: 'Requirements',
     companyCard: 'Company',
-    view: 'View',
     industry: 'Industry',
     size: 'Company size',
     founded: 'Founded',
@@ -114,11 +96,10 @@ export const en: Messages = {
   },
   companies: {
     title: 'Companies',
-    lead: 'Employers hiring in Indonesia, with the industry, city and team size stated plainly.',
     openRolesOne: '{n} open role',
     openRolesMany: '{n} open roles',
     filterIndustry: 'Industry',
-    empty: 'No companies found.',
+    empty: 'No companies found. Try another industry.',
     companyProfile: 'Company profile',
     allJobsOf: 'Open positions',
     noJobs: 'This company has no open positions right now.',
@@ -160,7 +141,6 @@ export const en: Messages = {
     },
   },
   footer: {
-    lines: ['Find IT work.', 'Track every step.', 'In your language.'],
     tagline:
       'Employment Star, a bilingual IT career platform for Indonesian students and fresh graduates.',
     platform: 'Platform',
@@ -215,7 +195,7 @@ export const en: Messages = {
     backToLogin: 'Back to login',
   },
   welcome: {
-    title: "You're in!",
+    title: 'Account created',
     greeting: 'Welcome, {name}',
     subtitle: 'Two sections are still empty.',
     education: 'Education',

@@ -7,13 +7,6 @@ import QuickAction from '../../components/QuickAction';
 import SectionHeading from '../../components/SectionHeading';
 import SearchBar from '../../components/SearchBar';
 import { ListSkeleton } from '../../components/StateBlock';
-import {
-  BookOpenIcon,
-  CheckSquareIcon,
-  FileTextIcon,
-  MessageSquareIcon,
-  StarIcon,
-} from '../../components/Icon';
 import { useLocale, useLocalePath, useMessages } from '../../i18n';
 import { listCompanies, listJobs, openRolesCount } from '../../services/jobs';
 import type { JobWithCompany } from '../../services/jobs';
@@ -65,10 +58,6 @@ export default function HomePage() {
         <Container className="grid grid-cols-1 items-center gap-12 py-16 lg:grid-cols-12">
           <div className="flex flex-col gap-8 lg:col-span-7">
             <div className="flex flex-col gap-5">
-              <span className="inline-flex items-center gap-2 self-start rounded-full bg-terracotta-soft px-3 py-1.5 font-body text-meta-sm text-primary-hover">
-                <StarIcon size={12} />
-                {t.home.badge}
-              </span>
               <h1 className="text-balance font-display text-display-lg-mobile text-ink lg:text-display-lg">
                 {t.home.title}
               </h1>
@@ -98,15 +87,7 @@ export default function HomePage() {
           <div className="lg:col-span-5">
             <div className="flex flex-col gap-4 rounded-panel border border-outline bg-surface-raised p-6">
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span
-                    aria-hidden="true"
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-control bg-terracotta-soft text-primary-hover"
-                  >
-                    <FileTextIcon size={14} />
-                  </span>
-                  <span className="font-display text-label-md text-ink">{t.home.meterTitle}</span>
-                </div>
+                <span className="font-display text-label-md text-ink">{t.home.meterTitle}</span>
                 <span className="font-mono text-label-md tabular-nums text-primary-hover">
                   {percent}%
                 </span>
@@ -151,34 +132,10 @@ export default function HomePage() {
         <Container className="pb-12 pt-16">
           <h2 className="sr-only">{t.home.quickActionTitle}</h2>
           <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <QuickAction
-              to={path('/my-profile')}
-              title={t.home.quickActions.resume.title}
-              body={t.home.quickActions.resume.body}
-              icon={<FileTextIcon size={20} />}
-              tone="terracotta"
-            />
-            <QuickAction
-              to={path('/messages')}
-              title={t.home.quickActions.status.title}
-              body={t.home.quickActions.status.body}
-              icon={<CheckSquareIcon size={20} />}
-              tone="ink"
-            />
-            <QuickAction
-              to={path('/career-classes')}
-              title={t.home.quickActions.classes.title}
-              body={t.home.quickActions.classes.body}
-              icon={<BookOpenIcon size={20} />}
-              tone="tan"
-            />
-            <QuickAction
-              to={path('/share-experience')}
-              title={t.home.quickActions.experience.title}
-              body={t.home.quickActions.experience.body}
-              icon={<MessageSquareIcon size={20} />}
-              tone="subtle"
-            />
+            <QuickAction to={path('/my-profile')} title={t.home.quickActions.resume} />
+            <QuickAction to={path('/messages')} title={t.home.quickActions.status} />
+            <QuickAction to={path('/career-classes')} title={t.home.quickActions.classes} />
+            <QuickAction to={path('/share-experience')} title={t.home.quickActions.experience} />
           </div>
         </Container>
       </section>
@@ -187,7 +144,6 @@ export default function HomePage() {
         <Container className="py-16">
           <SectionHeading
             title={t.home.hotJobs}
-            body={t.home.hotJobsBody}
             action={
               <Link
                 to={path('/jobs')}
@@ -213,7 +169,6 @@ export default function HomePage() {
         <Container className="pb-20">
           <SectionHeading
             title={t.home.featured}
-            body={t.home.featuredBody}
             action={
               <Link
                 to={path('/companies')}

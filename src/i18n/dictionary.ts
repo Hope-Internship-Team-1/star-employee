@@ -12,7 +12,6 @@ export interface NavMessages {
 }
 
 export interface HomeMessages {
-  badge: string;
   title: string;
   lead: string;
   searchPlaceholder: string;
@@ -22,21 +21,18 @@ export interface HomeMessages {
   meterValue: string;
   quickActionTitle: string;
   quickActions: {
-    resume: { title: string; body: string };
-    status: { title: string; body: string };
-    classes: { title: string; body: string };
-    experience: { title: string; body: string };
+    resume: string;
+    status: string;
+    classes: string;
+    experience: string;
   };
   hotJobs: string;
-  hotJobsBody: string;
   featured: string;
-  featuredBody: string;
   viewAll: string;
 }
 
 export interface JobsMessages {
   title: string;
-  lead: string;
   filterIndustry: string;
   filterProvince: string;
   filterCity: string;
@@ -72,7 +68,6 @@ export interface JobDetailMessages {
   responsibilities: string;
   requirements: string;
   companyCard: string;
-  view: string;
   industry: string;
   size: string;
   founded: string;
@@ -97,7 +92,6 @@ export interface JobDetailMessages {
 
 export interface CompaniesMessages {
   title: string;
-  lead: string;
   openRolesOne: string;
   openRolesMany: string;
   filterIndustry: string;
@@ -143,7 +137,6 @@ export interface Messages {
   state: StateMessages;
   enums: EnumsMessages;
   footer: {
-    lines: [string, string, string];
     tagline: string;
     platform: string;
     company: string;

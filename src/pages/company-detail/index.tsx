@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Container from '../../components/Container';
 import LanguageTag from '../../components/LanguageTag';
-import { ArrowRightIcon, MapPinIcon } from '../../components/Icon';
+import { MapPinIcon } from '../../components/Icon';
 import { useLocale, useLocalePath, useMessages } from '../../i18n';
 import { formatSalary, postedLabel } from '../../lib/format';
 import { idFromResourcePath, resourcePath } from '../../lib/slug';
@@ -85,10 +85,9 @@ export default function CompanyPage() {
         </div>
         <Link
           to={path('/jobs')}
-          className="ml-auto inline-flex items-center gap-2 whitespace-nowrap rounded-control border border-outline bg-surface-raised px-4 py-2 font-display text-label-md text-ink transition-colors duration-150 ease-paper hover:bg-surface-subtle"
+          className="ml-auto inline-flex items-center whitespace-nowrap rounded-control border border-outline bg-surface-raised px-4 py-2 font-display text-label-md text-ink transition-colors duration-150 ease-paper hover:bg-surface-subtle"
         >
           {t.companies.browseJobs}
-          <ArrowRightIcon size={14} />
         </Link>
       </section>
 

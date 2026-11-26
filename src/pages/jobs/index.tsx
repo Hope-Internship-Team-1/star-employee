@@ -162,7 +162,7 @@ export default function JobsPage() {
 
   return (
     <Container className="py-12">
-      <SectionHeading title={t.jobs.title} body={t.jobs.lead} />
+      <SectionHeading title={t.jobs.title} />
 
       <SearchBar
         key={`${filters.kw}|${filters.city}`}

@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import Container from '../../components/Container';
 import CompletenessMeter, { COMPLETENESS_GATE } from '../../components/CompletenessMeter';
 import LanguageTag from '../../components/LanguageTag';
-import { ArrowRightIcon, MapPinIcon } from '../../components/Icon';
+import { MapPinIcon } from '../../components/Icon';
 import { useLocale, useLocalePath, useMessages } from '../../i18n';
 import { formatSalary, postedLabel } from '../../lib/format';
 import { idFromResourcePath, resourcePath } from '../../lib/slug';
@@ -155,10 +155,9 @@ export default function JobDetailPage() {
                 </div>
                 <Link
                   to={path(`/companies/${resourcePath(company.name, company.id)}`)}
-                  className="inline-flex items-center gap-1 whitespace-nowrap font-display text-label-md text-primary hover:underline"
+                  className="inline-flex items-center whitespace-nowrap font-display text-label-md text-primary hover:underline"
                 >
-                  {t.jobDetail.view}
-                  <ArrowRightIcon size={14} />
+                  {t.companies.companyProfile}
                 </Link>
               </div>
 
