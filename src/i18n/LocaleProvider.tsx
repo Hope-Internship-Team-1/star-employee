@@ -3,16 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import type { Locale } from './dictionary';
 import { LocaleContext } from './localeContext';
 import { isLocale, replaceLocale } from './paths';
-
-const STORAGE_KEY = 'star.locale';
-
-function readStoredLocale(): Locale {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === 'id' ? 'id' : 'en';
-  } catch {
-    return 'en';
-  }
-}
+import { readStoredLocale, storeLocale } from './storage';
 
 export function LocaleProvider() {
   const location = useLocation();
@@ -24,11 +15,7 @@ export function LocaleProvider() {
 
   useEffect(() => {
     document.documentElement.lang = locale;
-    try {
-      localStorage.setItem(STORAGE_KEY, locale);
-    } catch {
-      // Storage can be unavailable in private mode; the UI still works.
-    }
+    storeLocale(locale);
   }, [locale]);
 
   const value = useMemo(
