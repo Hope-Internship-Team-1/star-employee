@@ -4,7 +4,6 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { AuthFlowProvider } from './context/AuthFlowProvider';
-import { LocaleProvider } from './i18n/LocaleProvider';
 import './index.css';
 import router from './router';
 import { antdTheme } from './theme/antd';
@@ -12,11 +11,9 @@ import { antdTheme } from './theme/antd';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider theme={antdTheme}>
-      <LocaleProvider>
-        <AuthFlowProvider>
-          <RouterProvider router={router} />
-        </AuthFlowProvider>
-      </LocaleProvider>
+      <AuthFlowProvider>
+        <RouterProvider router={router} />
+      </AuthFlowProvider>
     </ConfigProvider>
   </StrictMode>,
 );

@@ -6,7 +6,7 @@ import { AsideNote } from '../../components/AuthAside';
 import AuthLayout from '../../components/AuthLayout';
 import FormError from '../../components/FormError';
 import { fieldClassName } from '../../components/fieldClassName';
-import { format, useMessages } from '../../i18n';
+import { format, useLocale, useMessages } from '../../i18n';
 import { loginWithPassword, requestOtp, verifyOtp } from '../../services/auth';
 import { errorKey } from '../../services/errors';
 import type { ErrorKey } from '../../services/errors';
@@ -27,6 +27,7 @@ interface CodeValues extends EmailValues {
 
 export default function LoginPage() {
   const t = useMessages();
+  const { locale } = useLocale();
   const navigate = useNavigate();
   const [passwordForm] = Form.useForm<PasswordValues>();
   const [codeForm] = Form.useForm<CodeValues>();
@@ -83,7 +84,7 @@ export default function LoginPage() {
 
     try {
       await loginWithPassword(values.email, values.password);
-      navigate('/', { replace: true });
+      navigate(`/${locale}`, { replace: true });
     } catch (caught) {
       setError(errorKey(caught, 'login'));
     } finally {
@@ -121,7 +122,7 @@ export default function LoginPage() {
 
     try {
       await verifyOtp(values.email, values.code);
-      navigate('/', { replace: true });
+      navigate(`/${locale}`, { replace: true });
     } catch (caught) {
       setError(errorKey(caught, 'verify'));
     } finally {
@@ -305,7 +306,7 @@ export default function LoginPage() {
 
       <p className="mt-6 text-sm text-ink-soft">
         {t.login.noAccount}{' '}
-        <Link to="/register" className="text-clay hover:underline">
+        <Link to={`/${locale}/register`} className="text-clay hover:underline">
           {t.login.registerLink}
         </Link>
       </p>

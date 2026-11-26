@@ -6,7 +6,7 @@ import AuthLayout from '../../components/AuthLayout';
 import FormError from '../../components/FormError';
 import { fieldClassName } from '../../components/fieldClassName';
 import { useAuthFlow } from '../../context/authFlowContext';
-import { useMessages } from '../../i18n';
+import { useLocale, useMessages } from '../../i18n';
 import { register } from '../../services/auth';
 import { errorKey } from '../../services/errors';
 import type { ErrorKey } from '../../services/errors';
@@ -17,6 +17,7 @@ interface EmailValues {
 
 export default function RegisterPage() {
   const t = useMessages();
+  const { locale } = useLocale();
   const navigate = useNavigate();
   const { setEmail } = useAuthFlow();
   const [submitting, setSubmitting] = useState(false);
@@ -29,7 +30,7 @@ export default function RegisterPage() {
     try {
       await register({ email: values.email });
       setEmail(values.email);
-      navigate('/register/code');
+      navigate(`/${locale}/register/code`);
     } catch (caught) {
       setError(errorKey(caught));
     } finally {
@@ -75,7 +76,7 @@ export default function RegisterPage() {
       </Form>
 
       <p className="mt-6 text-sm text-ink-soft">
-        <Link to="/login" className="text-clay hover:underline">
+        <Link to={`/${locale}/login`} className="text-clay hover:underline">
           {t.register.backToLogin}
         </Link>
       </p>
