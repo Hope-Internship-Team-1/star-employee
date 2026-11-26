@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPinIcon, SearchIcon } from '../Icon';
 import { useLocalePath, useMessages } from '../../i18n';
-import { PROVINCES } from '../../data/geo';
+import { PROVINCES } from '../../lib/geo';
 
 interface SearchBarProps {
   initialKeyword?: string;

@@ -25,11 +25,22 @@ const router = createBrowserRouter([
       {
         element: <SiteLayout />,
         children: [
-          { index: true, element: <HomePage /> },
-          { path: 'jobs', element: <JobsPage /> },
-          { path: 'jobs/:jobId', element: <JobDetailPage /> },
-          { path: 'companies', element: <CompaniesPage /> },
-          { path: 'companies/:companyId', element: <CompanyPage /> },
+          {
+            errorElement: <ErrorPage />,
+            children: [
+              { index: true, element: <HomePage /> },
+              { path: 'jobs', element: <JobsPage /> },
+              { path: 'companies', element: <CompaniesPage /> },
+              {
+                loader: requireAuth,
+                children: [
+                  { path: 'jobs/:jobId', element: <JobDetailPage /> },
+                  { path: 'companies/:companyId', element: <CompanyPage /> },
+                ],
+              },
+              { path: '*', element: <ErrorPage /> },
+            ],
+          },
         ],
       },
       { path: 'login', element: <LoginPage /> },
@@ -40,7 +51,6 @@ const router = createBrowserRouter([
         loader: requireAuth,
         children: [{ path: 'welcome', element: <WelcomePage /> }],
       },
-      { path: '*', element: <ErrorPage /> },
     ],
   },
 ]);

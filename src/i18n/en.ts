@@ -62,6 +62,7 @@ export const en: Messages = {
     company: 'Company',
     city: 'City',
     salary: 'Salary',
+    site: 'Work arrangement',
     actions: 'Actions',
     page: 'Page {current} of {total}',
     previous: 'Previous',
@@ -123,10 +124,24 @@ export const en: Messages = {
     industry: {
       telecom: 'Telecom',
       finance: 'Finance',
-      ecommerce: 'E-commerce',
       manufacturing: 'Manufacturing',
       travel: 'Travel',
       electronics: 'Electronics',
+      healthcare: 'Healthcare',
+      energy: 'Energy',
+      media: 'Media',
+      logistics: 'Logistics',
+      property: 'Property',
+      retail: 'Retail',
+      conglomerate: 'Conglomerate',
+      technology: 'Technology',
+      education: 'Education',
+      services: 'Services',
+    },
+    site: {
+      onsite: 'On-site',
+      hybrid: 'Hybrid',
+      remote: 'Remote',
     },
     workingLanguage: {
       en: 'English',
@@ -223,9 +238,21 @@ export const en: Messages = {
     completeResume: 'Complete my resume',
     browseJobs: 'Browse jobs',
   },
-  notFound: {
-    code: '404',
-    message: 'Page not found',
+  errorPage: {
+    home: 'Back to home',
+    jobs: 'Browse jobs',
+    notFound: {
+      title: 'Page not found',
+      body: "The page you're looking for doesn't exist or has been moved. Check the URL or head back to find your next job.",
+    },
+    forbidden: {
+      title: 'Access denied',
+      body: "You don't have permission to view this page. Log in with the right account or head back home.",
+    },
+    server: {
+      title: 'Something went wrong',
+      body: 'We could not load this page. Try again in a moment or head back home.',
+    },
   },
   errors: {
     emailInvalid: 'Enter a valid email.',

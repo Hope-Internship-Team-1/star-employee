@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
-import LanguageTag from '../LanguageTag';
-import { useLocale, useLocalePath } from '../../i18n';
-import type { Company } from '../../data/types';
-import type { Job } from '../../data/jobs';
+import { useLocale, useLocalePath, useMessages } from '../../i18n';
+import type { JobSummary } from '../../services/types';
 import { formatSalary, postedLabel } from '../../lib/format';
 import { resourcePath } from '../../lib/slug';
 
-export default function JobCard({ job, company }: { job: Job; company: Company }) {
+export default function JobCard({ job }: { job: JobSummary }) {
+  const t = useMessages();
   const { locale } = useLocale();
+  const { company } = job;
   const path = useLocalePath();
 
   return (
@@ -30,15 +30,19 @@ export default function JobCard({ job, company }: { job: Job; company: Company }
             </p>
           </div>
         </div>
-        <LanguageTag language={job.language} />
+        <span className="shrink-0 rounded-full bg-terracotta-soft px-2.5 py-1 font-mono text-meta-sm text-primary-hover">
+          {t.enums.site[job.site]}
+        </span>
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-outline pt-3">
         <span className="font-mono text-meta-sm tabular-nums text-ink">
-          {formatSalary(job.salaryMin, job.salaryMax, locale)}
+          {job.salaryMax == null
+            ? t.enums.employmentType[job.type]
+            : formatSalary(job.salaryMin, job.salaryMax, locale)}
         </span>
         <span className="font-body text-meta-sm text-text-muted">
-          {postedLabel(job.postedDaysAgo, locale)}
+          {postedLabel(job.postedAt, locale)}
         </span>
       </div>
     </Link>

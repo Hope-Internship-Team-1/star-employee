@@ -8,8 +8,7 @@ import { useLocale, useLocalePath, useMessages } from '../../i18n';
 import { formatSalary, postedLabel } from '../../lib/format';
 import { idFromResourcePath, resourcePath } from '../../lib/slug';
 import { getJob, listJobsOfCompany, listSimilarJobs } from '../../services/jobs';
-import type { JobWithCompany } from '../../services/jobs';
-import type { Job } from '../../data/jobs';
+import type { Job, JobDetail, JobSummary } from '../../services/types';
 import { getResumeStatus } from '../../services/resume';
 
 export default function JobDetailPage() {
@@ -18,8 +17,8 @@ export default function JobDetailPage() {
   const path = useLocalePath();
   const { jobId } = useParams();
 
-  const [record, setRecord] = useState<JobWithCompany | null | undefined>(undefined);
-  const [similar, setSimilar] = useState<JobWithCompany[]>([]);
+  const [record, setRecord] = useState<JobDetail | null | undefined>(undefined);
+  const [similar, setSimilar] = useState<JobSummary[]>([]);
   const [siblings, setSiblings] = useState<Job[]>([]);
 
   const id = idFromResourcePath(jobId);
@@ -28,14 +27,14 @@ export default function JobDetailPage() {
     let active = true;
 
     (async () => {
-      const found = id ? await getJob(id) : undefined;
+      const found = id ? await getJob(id).catch(() => undefined) : undefined;
       if (!active) return;
       setRecord(found ?? null);
 
       if (found) {
         const [near, all] = await Promise.all([
-          listSimilarJobs(found.job),
-          listJobsOfCompany(found.job.companyId),
+          listSimilarJobs(found.job.id).catch(() => []),
+          listJobsOfCompany(found.job.companyId).catch(() => []),
         ]);
         if (active) {
           setSimilar(near);
@@ -83,7 +82,7 @@ export default function JobDetailPage() {
     { label: t.jobs.employmentType, value: t.enums.employmentType[job.type] },
     { label: t.jobDetail.experience, value: job.experience[locale] },
     { label: t.jobDetail.education, value: job.education[locale] },
-    { label: t.jobDetail.posted, value: postedLabel(job.postedDaysAgo, locale) },
+    { label: t.jobDetail.posted, value: postedLabel(job.postedAt, locale) },
   ];
 
   return (
@@ -233,7 +232,7 @@ export default function JobDetailPage() {
                 {t.jobDetail.similar}
               </h2>
               <ul className="flex flex-col divide-y divide-outline pt-4">
-                {similar.map(({ job: near, company: nearCompany }) => (
+                {similar.map((near) => (
                   <li key={near.id}>
                     <Link
                       to={path(`/jobs/${resourcePath(near.title[locale], near.id)}`)}
@@ -243,8 +242,10 @@ export default function JobDetailPage() {
                         {near.title[locale]}
                       </span>
                       <span className="font-body text-meta-sm text-text-secondary">
-                        {nearCompany?.name} &middot;{' '}
-                        {formatSalary(near.salaryMin, near.salaryMax, locale)}
+                        {near.company.name} &middot;{' '}
+                        {near.salaryMax == null
+                          ? near.city
+                          : formatSalary(near.salaryMin, near.salaryMax, locale)}
                       </span>
                     </Link>
                   </li>

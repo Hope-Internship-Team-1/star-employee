@@ -62,6 +62,7 @@ export const id: Messages = {
     company: 'Perusahaan',
     city: 'Kota',
     salary: 'Gaji',
+    site: 'Sistem kerja',
     actions: 'Tindakan',
     page: 'Halaman {current} dari {total}',
     previous: 'Sebelumnya',
@@ -123,10 +124,24 @@ export const id: Messages = {
     industry: {
       telecom: 'Telekomunikasi',
       finance: 'Keuangan',
-      ecommerce: 'E-commerce',
       manufacturing: 'Manufaktur',
       travel: 'Pariwisata',
       electronics: 'Elektronik',
+      healthcare: 'Kesehatan',
+      energy: 'Energi',
+      media: 'Media',
+      logistics: 'Logistik',
+      property: 'Properti',
+      retail: 'Ritel',
+      conglomerate: 'Konglomerasi',
+      technology: 'Teknologi',
+      education: 'Pendidikan',
+      services: 'Jasa',
+    },
+    site: {
+      onsite: 'Di kantor',
+      hybrid: 'Hybrid',
+      remote: 'Jarak jauh',
     },
     workingLanguage: {
       en: 'Bahasa Inggris',
@@ -223,9 +238,21 @@ export const id: Messages = {
     completeResume: 'Lengkapi resume saya',
     browseJobs: 'Lihat lowongan',
   },
-  notFound: {
-    code: '404',
-    message: 'Halaman tidak ditemukan',
+  errorPage: {
+    home: 'Kembali ke beranda',
+    jobs: 'Lihat lowongan',
+    notFound: {
+      title: 'Halaman tidak ditemukan',
+      body: 'Halaman yang kamu cari tidak ada atau sudah dipindahkan. Periksa URL atau kembali untuk mencari pekerjaan berikutnya.',
+    },
+    forbidden: {
+      title: 'Akses ditolak',
+      body: 'Kamu tidak punya izin untuk membuka halaman ini. Masuk dengan akun yang sesuai atau kembali ke beranda.',
+    },
+    server: {
+      title: 'Ada yang tidak beres',
+      body: 'Halaman ini gagal dimuat. Coba lagi sebentar lagi atau kembali ke beranda.',
+    },
   },
   errors: {
     emailInvalid: 'Masukkan email yang valid.',
