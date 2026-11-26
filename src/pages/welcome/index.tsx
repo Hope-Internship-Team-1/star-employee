@@ -1,38 +1,21 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/AuthLayout';
 import { primaryButtonClassName, secondaryButtonClassName } from '../../components/buttonClassName';
 import { format, useLocalePath, useMessages } from '../../i18n';
-import { getMe } from '../../services/auth';
+import { useSession } from '../../hooks/useSession';
 import { getResumeStatus } from '../../services/resume';
 
 export default function WelcomePage() {
   const t = useMessages();
   const path = useLocalePath();
   const navigate = useNavigate();
-  const [name, setName] = useState('');
+  const name = useSession()?.name ?? '';
   const resume = getResumeStatus();
 
   const moduleLabels: Record<string, string> = {
     education: t.welcome.education,
     work_history: t.welcome.workHistory,
   };
-
-  useEffect(() => {
-    let active = true;
-
-    getMe()
-      .then((user) => {
-        if (active) setName(user.name ?? '');
-      })
-      .catch(() => {
-        // The greeting is optional, so the page stays usable without it.
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   return (
     <AuthLayout>

@@ -1,4 +1,5 @@
 import { apiFetch } from './client';
+import { clearSession, setSession } from './session';
 import type { RegisterInput, UpdateUserInput, User } from './types';
 
 export function requestOtp(email: string): Promise<void> {
@@ -8,11 +9,13 @@ export function requestOtp(email: string): Promise<void> {
   });
 }
 
-export function verifyOtp(email: string, code: string): Promise<User> {
-  return apiFetch('/auth/otp/verify', {
+export async function verifyOtp(email: string, code: string): Promise<User> {
+  const user = await apiFetch<User>('/auth/otp/verify', {
     method: 'POST',
     body: JSON.stringify({ email, code }),
   });
+  clearSession();
+  return user;
 }
 
 export function register(input: RegisterInput): Promise<User> {
@@ -40,24 +43,25 @@ export async function setPassword(password: string): Promise<void> {
   });
 }
 
-export function loginWithPassword(email: string, password: string): Promise<User> {
-  return apiFetch('/auth/login', {
+export async function loginWithPassword(email: string, password: string): Promise<User> {
+  const user = await apiFetch<User>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
+  clearSession();
+  return user;
 }
 
-export function logout(): Promise<void> {
-  return apiFetch('/auth/logout', { method: 'POST' });
+export async function logout(): Promise<void> {
+  await apiFetch('/auth/logout', { method: 'POST' });
+  setSession(null);
 }
 
-export function getMe(): Promise<User> {
-  return apiFetch('/users/me');
-}
-
-export function updateMe(patch: UpdateUserInput): Promise<User> {
-  return apiFetch('/users/me', {
+export async function updateMe(patch: UpdateUserInput): Promise<User> {
+  const user = await apiFetch<User>('/users/me', {
     method: 'PATCH',
     body: JSON.stringify(patch),
   });
+  clearSession();
+  return user;
 }

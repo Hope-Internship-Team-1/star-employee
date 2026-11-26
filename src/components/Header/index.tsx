@@ -1,12 +1,21 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Brand from '../Brand';
 import Container from '../Container';
 import LocaleSwitch from '../LocaleSwitch';
 import { useLocalePath, useMessages } from '../../i18n';
+import { useSession } from '../../hooks/useSession';
+import { logout } from '../../services/auth';
 
 export default function Header() {
   const t = useMessages();
   const path = useLocalePath();
+  const navigate = useNavigate();
+  const session = useSession();
+
+  async function onLogout() {
+    await logout();
+    navigate(path(), { replace: true });
+  }
 
   const links = [
     { to: path(), label: t.nav.home, end: true },
@@ -14,7 +23,7 @@ export default function Header() {
     { to: path('/companies'), label: t.nav.companies },
     { to: path('/career-classes'), label: t.nav.classes },
     { to: path('/messages'), label: t.nav.messages },
-    { to: path('/my-profile'), label: t.nav.profile },
+    ...(session ? [{ to: path('/my-profile'), label: t.nav.profile }] : []),
   ];
 
   return (
@@ -44,12 +53,28 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <LocaleSwitch />
-          <Link
-            to={path('/login')}
-            className="whitespace-nowrap rounded-control border border-outline bg-surface-raised px-4 py-2 font-display text-label-md text-ink transition-colors duration-150 ease-paper hover:bg-surface-subtle"
-          >
-            {t.nav.login}
-          </Link>
+          {session === null && (
+            <Link
+              to={path('/login')}
+              className="whitespace-nowrap rounded-control border border-outline bg-surface-raised px-4 py-2 font-display text-label-md text-ink transition-colors duration-150 ease-paper hover:bg-surface-subtle"
+            >
+              {t.nav.login}
+            </Link>
+          )}
+          {session && (
+            <>
+              <span className="hidden max-w-40 truncate font-body text-body-sm text-text-secondary sm:inline">
+                {session.name || session.email}
+              </span>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="whitespace-nowrap rounded-control border border-outline bg-surface-raised px-4 py-2 font-display text-label-md text-ink transition-colors duration-150 ease-paper hover:bg-surface-subtle"
+              >
+                {t.nav.logout}
+              </button>
+            </>
+          )}
         </div>
       </Container>
     </header>
