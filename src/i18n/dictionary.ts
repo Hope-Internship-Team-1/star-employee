@@ -85,6 +85,7 @@ export interface JobsMessages {
 }
 
 export interface JobDetailMessages {
+  backToJobs: string;
   responsibilities: string;
   requirements: string;
   companyCard: string;

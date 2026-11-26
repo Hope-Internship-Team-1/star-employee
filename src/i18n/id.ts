@@ -89,6 +89,7 @@ export const id: Messages = {
     clearSearch: 'Hapus pencarian',
   },
   jobDetail: {
+    backToJobs: 'Kembali ke Lowongan',
     responsibilities: 'Tanggung jawab',
     requirements: 'Persyaratan',
     companyCard: 'Perusahaan',

@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Container from '../../components/Container';
 import CompletenessMeter, { COMPLETENESS_GATE } from '../../components/CompletenessMeter';
-import LanguageTag from '../../components/LanguageTag';
-import { MapPinIcon } from '../../components/Icon';
+import { ArrowRightIcon, ChevronLeftIcon, MapPinIcon, StarIcon } from '../../components/Icon';
 import { useLocale, useLocalePath, useMessages } from '../../i18n';
 import { formatSalary, postedLabel } from '../../lib/format';
 import { idFromResourcePath, resourcePath } from '../../lib/slug';
@@ -50,7 +49,7 @@ export default function JobDetailPage() {
 
   if (record === undefined) {
     return (
-      <Container className="py-20">
+      <Container className="py-section-md">
         <p className="font-body text-body-md text-text-secondary">{t.state.loading}</p>
       </Container>
     );
@@ -58,14 +57,14 @@ export default function JobDetailPage() {
 
   if (record === null) {
     return (
-      <Container className="py-20">
-        <div className="flex flex-col items-start gap-4 rounded-card border border-outline bg-surface-raised p-8">
-          <h1 className="font-display text-title-md text-ink">{t.jobDetail.notFound}</h1>
+      <Container className="py-section-md">
+        <div className="flex max-w-xl flex-col items-start gap-grid-4 rounded-card border border-outline bg-surface-raised p-card-pad-lg">
+          <h1 className="font-page text-title-md text-on-surface">{t.jobDetail.notFound}</h1>
           <Link
             to={path('/jobs')}
-            className="rounded-control bg-surface-subtle px-4 py-2 font-display text-label-md text-ink hover:bg-tan-soft"
+            className="inline-flex items-center gap-grid-2 rounded-control bg-primary px-card-pad py-grid-2 font-label text-label-md text-on-primary transition-colors duration-hover-colour ease-hover-colour hover:bg-primary-hover"
           >
-            {t.jobs.title}
+            {t.companies.browseJobs}
           </Link>
         </div>
       </Container>
@@ -77,181 +76,203 @@ export default function JobDetailPage() {
   const percent = resume.completeness;
   const closed = job.status === 'closed';
   const blocked = closed || percent < COMPLETENESS_GATE;
+  const salary = formatSalary(job.salaryMin, job.salaryMax, locale);
+  const hasSalary = job.salaryMin != null && job.salaryMax != null;
 
-  const meta = [
-    { label: t.jobs.employmentType, value: t.enums.employmentType[job.type] },
+  const chips: Array<{ key: string; value: string; icon?: boolean }> = [
+    { key: 'city', icon: true, value: job.city },
+    { key: 'type', value: t.enums.employmentType[job.type] },
+    { key: 'site', value: t.enums.site[job.site] },
+    { key: 'language', value: t.enums.workingLanguage[job.language] },
+    { key: 'posted', value: postedLabel(job.postedAt, locale) },
+  ];
+
+  const details = [
     { label: t.jobDetail.experience, value: job.experience?.[locale] },
     { label: t.jobDetail.education, value: job.education?.[locale] },
-    { label: t.jobDetail.posted, value: postedLabel(job.postedAt, locale) },
   ].filter((item) => item.value);
 
   return (
-    <Container className="py-10">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="flex flex-col gap-6 lg:col-span-2">
-          <article className="flex flex-col gap-5 rounded-card border border-outline bg-surface-raised p-6 lg:p-8">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="font-display text-page-lg-mobile text-ink lg:text-page-md">
-                  {job.title[locale]}
-                </h1>
-                <LanguageTag language={job.language} />
-              </div>
-              <p className="flex items-center gap-2 font-body text-body-md text-text-secondary">
-                <MapPinIcon size={16} />
-                {job.city}
-                {company && <> &middot; {company.name}</>}
-              </p>
-              <p className="font-mono text-title-sm tabular-nums text-ink">
-                {formatSalary(job.salaryMin, job.salaryMax, locale)}
-              </p>
+    <Container className="py-section-md">
+      <div className="flex flex-wrap items-center justify-between gap-grid-4 pb-card-pad-lg">
+        <Link
+          to={path('/jobs')}
+          className="inline-flex items-center gap-grid-2 font-body text-body-sm text-text-secondary transition-colors duration-hover-colour ease-hover-colour hover:text-on-surface"
+        >
+          <ChevronLeftIcon size={16} />
+          {t.jobDetail.backToJobs}
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 items-start gap-section-md lg:grid-cols-[1fr_320px]">
+        <div className="flex min-w-0 flex-col gap-section-sm">
+          {closed && (
+            <p className="flex items-center gap-grid-2 rounded-control border border-on-surface bg-surface-raised px-grid-4 py-grid-3 font-label text-label-md text-on-surface">
+              <StarIcon size={16} className="shrink-0 text-primary" />
+              {t.jobDetail.closed}
+            </p>
+          )}
+
+          <header className="flex flex-col gap-card-pad border-b border-outline pb-section-sm">
+            <h1 className="font-page text-page-lg-mobile text-balance text-on-surface lg:text-page-lg">
+              {job.title[locale]}
+            </h1>
+
+            <ul className="flex flex-wrap items-center gap-grid-2">
+              {chips.map((chip) => (
+                <li
+                  key={chip.key}
+                  className="inline-flex items-center gap-grid-2 rounded-control border border-outline bg-surface-subtle px-grid-3 py-grid-1 font-body text-meta-sm text-text-secondary"
+                >
+                  {chip.icon && <MapPinIcon size={14} className="shrink-0 text-text-muted" />}
+                  {chip.value}
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-col gap-grid-2 rounded-card border border-outline bg-dark-tan p-card-pad-lg">
+              <span className="font-label text-meta-sm text-on-surface">{t.jobs.salary}</span>
+              <span
+                className={
+                  hasSalary
+                    ? 'font-mono text-title-md tabular-nums text-on-surface lg:text-page-md'
+                    : 'font-mono text-title-md text-on-surface'
+                }
+              >
+                {hasSalary ? salary : t.jobDetail.negotiable}
+              </span>
             </div>
 
-            <dl className="grid grid-cols-2 gap-4 border-y border-outline py-4 sm:grid-cols-4">
-              {meta.map((item) => (
-                <div key={item.label} className="flex flex-col gap-1">
-                  <dt className="font-body text-meta-sm text-text-muted">{item.label}</dt>
-                  <dd className="font-body text-body-sm text-ink">{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-
-            {job.responsibilities && job.responsibilities.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <h2 className="font-display text-title-sm text-ink">
-                  {t.jobDetail.responsibilities}
-                </h2>
-                <ul className="flex list-disc flex-col gap-2 pl-5 font-body text-body-md text-text-secondary">
-                  {job.responsibilities.map((item) => (
-                    <li key={item.en}>{item[locale]}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {job.requirements && job.requirements.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <h2 className="font-display text-title-sm text-ink">{t.jobDetail.requirements}</h2>
-                <ul className="flex list-disc flex-col gap-2 pl-5 font-body text-body-md text-text-secondary">
-                  {job.requirements.map((item) => (
-                    <li key={item.en}>{item[locale]}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </article>
-
-          {company && (
-            <section className="flex flex-col gap-4 rounded-card border border-outline bg-surface-raised p-6 lg:p-8">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <span
-                    aria-hidden="true"
-                    className="inline-flex h-12 w-12 items-center justify-center rounded-control bg-primary font-display text-title-md text-on-primary"
-                  >
-                    {company.initials}
-                  </span>
-                  <div>
-                    <h2 className="font-display text-title-sm text-ink">{company.name}</h2>
-                    <p className="font-body text-body-sm text-text-secondary">
-                      {t.enums.industry[company.industry]} &middot; {company.city}
-                    </p>
-                  </div>
-                </div>
+            <div className="flex flex-wrap items-center gap-grid-3">
+              <button
+                type="button"
+                disabled={blocked}
+                className="inline-flex items-center justify-center rounded-control bg-primary px-card-pad-lg py-grid-3 font-label text-label-md text-on-primary transition-colors duration-hover-colour ease-hover-colour hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {t.jobDetail.apply}
+              </button>
+              {blocked && !closed && (
                 <Link
-                  to={path(`/companies/${resourcePath(company.name, company.id)}`)}
-                  className="inline-flex items-center whitespace-nowrap font-display text-label-md text-primary hover:underline"
+                  to={path('/my-profile')}
+                  className="inline-flex items-center gap-grid-2 rounded-control border border-outline bg-surface-raised px-card-pad py-grid-3 font-label text-label-md text-on-surface transition-colors duration-hover-colour ease-hover-colour hover:bg-dark-tan"
                 >
-                  {t.companies.companyProfile}
+                  {t.jobDetail.completeResume}
                 </Link>
-              </div>
+              )}
+            </div>
 
-              <dl className="grid grid-cols-1 gap-3 border-t border-outline pt-4 sm:grid-cols-3">
-                <div className="flex flex-col gap-1">
-                  <dt className="font-body text-meta-sm text-text-muted">{t.jobDetail.industry}</dt>
-                  <dd className="font-body text-body-sm text-ink">
-                    {t.enums.industry[company.industry]}
-                  </dd>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <dt className="font-body text-meta-sm text-text-muted">{t.jobDetail.size}</dt>
-                  <dd className="font-body text-body-sm text-ink">
-                    {t.enums.scale[company.scale] ?? company.scale}
-                  </dd>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <dt className="font-body text-meta-sm text-text-muted">{t.jobDetail.founded}</dt>
-                  <dd className="font-body text-body-sm text-ink">{company.since}</dd>
-                </div>
+            {details.length > 0 && (
+              <dl className="flex flex-wrap gap-x-card-pad-lg gap-y-grid-3 border-t border-outline pt-card-pad">
+                {details.map((item) => (
+                  <div key={item.label} className="flex flex-col gap-grid-1">
+                    <dt className="font-meta text-meta-sm text-text-muted">{item.label}</dt>
+                    <dd className="font-body text-body-sm text-on-surface">{item.value}</dd>
+                  </div>
+                ))}
               </dl>
+            )}
+          </header>
 
-              <p className="font-body text-body-sm text-text-secondary">
-                {company.about?.[locale]}
-              </p>
+          {job.responsibilities && job.responsibilities.length > 0 && (
+            <section className="flex max-w-prose flex-col gap-grid-4">
+              <h2 className="flex items-center gap-grid-2 font-title text-title-md text-on-surface">
+                <StarIcon size={14} className="shrink-0 text-primary" />
+                {t.jobDetail.responsibilities}
+              </h2>
+              <ul className="flex list-disc flex-col gap-grid-3 pl-grid-5 font-body text-body-sm text-text-secondary">
+                {job.responsibilities.map((item) => (
+                  <li key={item.en}>{item[locale]}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {job.requirements && job.requirements.length > 0 && (
+            <section className="flex max-w-prose flex-col gap-grid-4 pt-grid-2">
+              <h2 className="flex items-center gap-grid-2 font-title text-title-md text-on-surface">
+                <StarIcon size={14} className="shrink-0 text-primary" />
+                {t.jobDetail.requirements}
+              </h2>
+              <ul className="flex list-disc flex-col gap-grid-3 pl-grid-5 font-body text-body-sm text-text-secondary">
+                {job.requirements.map((item) => (
+                  <li key={item.en}>{item[locale]}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          <section
+            aria-label={t.jobDetail.companyCard}
+            className="flex flex-col justify-between gap-grid-4 rounded-card border border-dark-tan bg-surface-raised p-card-pad-lg sm:flex-row sm:items-center"
+          >
+            <div className="flex min-w-0 items-center gap-grid-4">
+              <span
+                aria-hidden="true"
+                className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-control bg-primary font-title text-title-sm text-on-primary"
+              >
+                {company.initials}
+              </span>
+              <div className="flex min-w-0 flex-col gap-grid-1">
+                <h2 className="font-title text-title-sm text-on-surface">{company.name}</h2>
+                <p className="font-body text-body-sm text-text-secondary">
+                  {t.enums.industry[company.industry]} &middot;{' '}
+                  {t.enums.scale[company.scale] ?? company.scale} &middot;{' '}
+                  {t.companies.since.replace('{year}', company.since)}
+                </p>
+              </div>
+            </div>
+            <Link
+              to={path(`/companies/${resourcePath(company.name, company.id)}`)}
+              className="shrink-0 rounded-control bg-dark-tan px-grid-4 py-grid-2 font-label text-label-md text-on-surface transition-colors duration-hover-colour ease-hover-colour hover:bg-primary hover:text-on-primary"
+            >
+              {t.companies.companyProfile}
+            </Link>
+          </section>
+
+          {company.about?.[locale] && (
+            <section
+              aria-label={t.jobDetail.about}
+              className="flex max-w-prose flex-col gap-grid-3"
+            >
+              <h2 className="font-title text-title-sm text-on-surface">{t.jobDetail.about}</h2>
+              <p className="font-body text-body-sm text-text-secondary">{company.about[locale]}</p>
             </section>
           )}
         </div>
 
-        <aside className="flex flex-col gap-6">
-          <section className="flex flex-col gap-4 rounded-card border border-outline bg-surface-raised p-6">
-            {closed ? (
-              <p className="font-body text-body-md text-text-secondary">{t.jobDetail.notFound}</p>
-            ) : (
-              <>
-                <CompletenessMeter percent={percent} />
-                <button
-                  type="button"
-                  disabled={blocked}
-                  className={[
-                    'w-full rounded-control px-5 py-3 font-display text-label-md transition-colors duration-150 ease-paper',
-                    blocked
-                      ? 'cursor-not-allowed bg-surface-subtle text-text-muted'
-                      : 'bg-primary text-on-primary hover:bg-primary-hover',
-                  ].join(' ')}
-                >
-                  {t.jobDetail.apply}
-                </button>
-                {blocked && (
-                  <Link
-                    to={path('/my-profile')}
-                    className="text-center font-display text-label-md text-primary hover:underline"
-                  >
-                    {t.jobDetail.completeResume}
-                  </Link>
-                )}
-              </>
-            )}
+        <aside className="flex w-full shrink-0 flex-col gap-card-pad-lg lg:sticky lg:top-8 lg:w-[320px]">
+          <section
+            aria-label={t.jobDetail.completeness}
+            className="flex flex-col gap-grid-3 rounded-card border border-outline border-t-4 border-t-primary bg-surface-raised p-card-pad"
+          >
+            <CompletenessMeter percent={percent} />
           </section>
 
-          {company && (
-            <section className="flex flex-col gap-2 rounded-card border border-outline bg-surface-raised p-6">
-              <h2 className="font-display text-label-md text-ink">{t.jobDetail.address}</h2>
-              <p className="font-body text-body-sm text-text-secondary">
-                {company.city} &middot; {company.name}
-              </p>
-            </section>
-          )}
+          <section
+            aria-label={t.jobDetail.address}
+            className="flex flex-col gap-grid-1 rounded-card border border-outline bg-dark-tan p-card-pad"
+          >
+            <span className="font-label text-meta-sm text-on-surface">{t.jobDetail.address}</span>
+            <span className="font-label text-label-md text-on-surface">{company.name}</span>
+            <span className="font-body text-body-sm text-on-surface">{job.city}</span>
+          </section>
 
           {similar.length > 0 && (
-            <section className="flex flex-col rounded-card border border-outline bg-surface-raised">
-              <h2 className="px-6 pt-6 font-display text-label-md text-ink">
-                {t.jobDetail.similar}
-              </h2>
-              <ul className="flex flex-col divide-y divide-outline pt-4">
+            <section aria-label={t.jobDetail.similar} className="flex flex-col gap-grid-3">
+              <h2 className="font-title text-title-sm text-on-surface">{t.jobDetail.similar}</h2>
+              <ul className="divide-y divide-outline border-y border-outline">
                 {similar.map((near) => (
                   <li key={near.id}>
                     <Link
                       to={path(`/jobs/${resourcePath(near.title[locale], near.id)}`)}
-                      className="flex flex-col gap-1 px-6 py-3 transition-colors duration-150 ease-paper hover:bg-surface-subtle"
+                      className="flex flex-col gap-grid-1 px-grid-2 py-grid-3 transition-colors duration-hover-colour ease-hover-colour hover:bg-surface-subtle"
                     >
-                      <span className="font-display text-label-md text-ink">
+                      <span className="font-label text-label-md text-on-surface">
                         {near.title[locale]}
                       </span>
                       <span className="font-body text-meta-sm text-text-secondary">
-                        {near.company.name} &middot;{' '}
-                        {near.salaryMax == null
-                          ? near.city
-                          : formatSalary(near.salaryMin, near.salaryMax, locale)}
+                        {near.company.name} &middot; {near.city} &middot;{' '}
+                        {formatSalary(near.salaryMin, near.salaryMax, locale)}
                       </span>
                     </Link>
                   </li>
@@ -263,23 +284,32 @@ export default function JobDetailPage() {
       </div>
 
       {siblings.length > 0 && (
-        <section className="mt-10">
-          <h2 className="pb-4 font-display text-title-md text-ink">{t.jobDetail.allJobs}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section aria-label={t.jobDetail.allJobs} className="pt-section-md">
+          <h2 className="flex items-center gap-grid-2 pb-grid-4 font-title text-title-md text-on-surface">
+            <StarIcon size={14} className="shrink-0 text-primary" />
+            {t.jobDetail.allJobs}
+          </h2>
+          <ul className="grid grid-cols-1 gap-grid-3 sm:grid-cols-2 lg:grid-cols-3">
             {siblings.map((sibling) => (
-              <Link
-                key={sibling.id}
-                to={path(`/jobs/${resourcePath(sibling.title[locale], sibling.id)}`)}
-                className="flex flex-col gap-2 rounded-card border border-outline bg-surface-raised p-5 transition-colors duration-150 ease-paper hover:bg-surface-subtle"
-              >
-                <span className="font-display text-label-md text-ink">{sibling.title[locale]}</span>
-                <span className="font-body text-meta-sm text-text-secondary">{sibling.city}</span>
-                <span className="font-mono text-meta-sm tabular-nums text-ink">
-                  {formatSalary(sibling.salaryMin, sibling.salaryMax, locale)}
-                </span>
-              </Link>
+              <li key={sibling.id}>
+                <Link
+                  to={path(`/jobs/${resourcePath(sibling.title[locale], sibling.id)}`)}
+                  className="flex h-full flex-col gap-grid-2 rounded-card border border-outline bg-surface-raised p-card-pad transition-colors duration-hover-colour ease-hover-colour hover:bg-surface-subtle"
+                >
+                  <span className="font-label text-label-md text-on-surface">
+                    {sibling.title[locale]}
+                  </span>
+                  <span className="font-body text-meta-sm text-text-secondary">
+                    {sibling.city} &middot; {t.enums.employmentType[sibling.type]}
+                  </span>
+                  <span className="mt-auto inline-flex items-center gap-grid-2 font-mono text-mono-meta tabular-nums text-on-surface">
+                    {formatSalary(sibling.salaryMin, sibling.salaryMax, locale)}
+                    <ArrowRightIcon size={14} className="text-text-muted" />
+                  </span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
     </Container>

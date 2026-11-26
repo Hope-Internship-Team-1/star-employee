@@ -89,6 +89,7 @@ export const en: Messages = {
     clearSearch: 'Clear search',
   },
   jobDetail: {
+    backToJobs: 'Back to Jobs',
     responsibilities: 'Responsibilities',
     requirements: 'Requirements',
     companyCard: 'Company',
