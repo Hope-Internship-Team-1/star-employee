@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { Industry, EmploymentType, WorkingLanguage } from '../data/dictionaries';
+import type { Industry, EmploymentType, WorkingLanguage } from '../services/types';
 import type { JobSort } from '../services/jobs';
 
 export interface JobsFilterState {

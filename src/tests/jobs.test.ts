@@ -1,115 +1,76 @@
-import { describe, expect, test } from 'vitest';
-import { getJob, listCompanies, listJobs, listSimilarJobs } from '../services/jobs';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { getCompany, getJob, listJobs, toQueryString } from '../services/jobs';
+import { daysSince, formatSalary, postedLabel } from '../lib/format';
 
-const EN = 'en' as const;
+beforeEach(() => vi.stubEnv('VITE_API_BASE_URL', 'https://api.test'));
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+});
+
+function mockFetch(makeResponse: () => Response) {
+  const fetch = vi.fn().mockImplementation(() => Promise.resolve(makeResponse()));
+  vi.stubGlobal('fetch', fetch);
+  return fetch;
+}
+
+describe('toQueryString', () => {
+  test('drops empty values', () => {
+    expect(toQueryString({ keyword: '', city: 'Bandung', minSalary: 0, page: 2 })).toBe(
+      '?city=Bandung&page=2',
+    );
+  });
+
+  test('returns an empty string when nothing is set', () => {
+    expect(toQueryString({ keyword: undefined })).toBe('');
+  });
+});
 
 describe('listJobs', () => {
-  test('returns only open jobs by default query', async () => {
-    const page = await listJobs({ query: { status: 'open' }, locale: EN });
-    expect(page.items.every(({ job }) => job.status === 'open')).toBe(true);
+  test('sends filters and omits the default sort', async () => {
+    const fetch = mockFetch(() => Response.json({ items: [], total: 0 }));
+
+    await listJobs({ query: { keyword: 'go', industry: '', status: 'open' }, page: 1 });
+
+    expect(fetch.mock.calls[0][0]).toBe('https://api.test/jobs?keyword=go&status=open&page=1');
   });
 
-  test('excludes closed jobs when status filter is open', async () => {
-    const page = await listJobs({ query: { status: 'open' }, pageSize: 100, locale: EN });
-    expect(page.items.find(({ job }) => job.id === 'job_014')).toBeUndefined();
-  });
+  test('sends a non-default sort', async () => {
+    const fetch = mockFetch(() => Response.json({ items: [], total: 0 }));
 
-  test('filters by keyword across title, company and city', async () => {
-    const page = await listJobs({ query: { keyword: 'tokopedia' }, pageSize: 100, locale: EN });
-    expect(page.total).toBeGreaterThan(0);
-    expect(page.items.every(({ company }) => company?.name === 'PT Tokopedia')).toBe(true);
-  });
+    await listJobs({ query: {}, sort: 'salary' });
 
-  test('filters by province', async () => {
-    const page = await listJobs({
-      query: { province: 'jawa-barat' },
-      pageSize: 100,
-      locale: EN,
-    });
-    expect(page.total).toBeGreaterThan(0);
-    expect(page.items.every(({ job }) => job.provinceId === 'jawa-barat')).toBe(true);
-  });
-
-  test('filters by working language', async () => {
-    const page = await listJobs({ query: { language: 'en' }, pageSize: 100, locale: EN });
-    expect(page.items.every(({ job }) => job.language === 'en')).toBe(true);
-  });
-
-  test('filters by minimum salary against the top of the band', async () => {
-    const page = await listJobs({
-      query: { minSalary: 20_000_000 },
-      pageSize: 100,
-      locale: EN,
-    });
-    expect(page.total).toBeGreaterThan(0);
-    expect(page.items.every(({ job }) => job.salaryMax >= 20_000_000)).toBe(true);
-  });
-
-  test('sorts by salary descending', async () => {
-    const page = await listJobs({
-      query: {},
-      sort: 'salary',
-      pageSize: 100,
-      locale: EN,
-    });
-    const salaries = page.items.map(({ job }) => job.salaryMax);
-    expect(salaries).toEqual([...salaries].sort((a, b) => b - a));
-  });
-
-  test('paginates and clamps an out-of-range page', async () => {
-    const page = await listJobs({ query: {}, page: 99, pageSize: 10, locale: EN });
-    expect(page.page).toBe(page.totalPages);
-    expect(page.items.length).toBeLessThanOrEqual(page.pageSize);
-  });
-
-  test('matches Indonesian keywords in the id locale', async () => {
-    const page = await listJobs({
-      query: { keyword: 'lowongan' },
-      pageSize: 100,
-      locale: EN,
-    });
-    expect(page.total).toBe(0);
+    expect(fetch.mock.calls[0][0]).toBe('https://api.test/jobs?sort=salary');
   });
 });
 
-describe('getJob', () => {
-  test('returns the job with its company joined', async () => {
-    const record = await getJob('job_001');
-    expect(record?.job.id).toBe('job_001');
-    expect(record?.company?.id).toBe('cmp_001');
-  });
-
-  test('returns undefined for an unknown id', async () => {
+describe('detail lookups', () => {
+  test('getJob returns undefined on 404', async () => {
+    mockFetch(() => Response.json({ error: 'Not Found' }, { status: 404 }));
     expect(await getJob('job_999')).toBeUndefined();
   });
-});
 
-describe('listSimilarJobs', () => {
-  test('never includes the job itself', async () => {
-    const record = await getJob('job_001');
-    const similar = await listSimilarJobs(record!.job);
-    expect(similar.find(({ job }) => job.id === 'job_001')).toBeUndefined();
-  });
-
-  test('keeps the same city and industry', async () => {
-    const record = await getJob('job_003');
-    const similar = await listSimilarJobs(record!.job);
-    for (const row of similar) {
-      expect(row.job.city).toBe(record!.job.city);
-      expect(row.company?.industry).toBe(record!.company!.industry);
-    }
+  test('getCompany rethrows other errors', async () => {
+    mockFetch(() => Response.json({ error: 'Unauthorized' }, { status: 401 }));
+    await expect(getCompany('cmp_001')).rejects.toMatchObject({ status: 401 });
   });
 });
 
-describe('listCompanies', () => {
-  test('filters by industry key', async () => {
-    const companies = await listCompanies({ industry: 'ecommerce' });
-    expect(companies.length).toBeGreaterThan(0);
-    expect(companies.every((company) => company.industry === 'ecommerce')).toBe(true);
+describe('format', () => {
+  const now = Date.parse('2026-11-26T12:00:00Z');
+
+  test('counts whole days since a timestamp, never negative', () => {
+    expect(daysSince('2026-11-19T13:00:00Z', now)).toBe(6);
+    expect(daysSince('2026-11-27T00:00:00Z', now)).toBe(0);
   });
 
-  test('returns everything with no filter', async () => {
-    const companies = await listCompanies();
-    expect(companies.length).toBe(8);
+  test('labels a posting by its age', () => {
+    expect(postedLabel('2026-11-26T08:00:00Z', 'en', now)).toBe('Today');
+    expect(postedLabel('2026-11-12T12:00:00Z', 'en', now)).toBe('2 weeks ago');
+  });
+
+  test('marks a missing salary as not disclosed', () => {
+    expect(formatSalary(null, 10_000_000, 'en')).toBe('Salary not disclosed');
   });
 });

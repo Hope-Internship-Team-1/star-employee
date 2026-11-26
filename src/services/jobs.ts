@@ -1,25 +1,24 @@
-import type { Locale } from '../i18n';
-import { COMPANIES } from '../data/companies';
-import { JOBS } from '../data/jobs';
-import { citiesOf } from '../data/geo';
-import type { Industry, JobStatus } from '../data/dictionaries';
-import type { Company } from '../data/types';
-import type { Job } from '../data/jobs';
+import { ApiError, apiFetch } from './client';
+import type {
+  Company,
+  EmploymentType,
+  Industry,
+  Job,
+  JobDetail,
+  JobStatus,
+  JobSummary,
+  WorkingLanguage,
+} from './types';
 
 export interface JobQuery {
   keyword?: string;
   industry?: Industry | '';
   province?: string;
   city?: string;
-  type?: Job['type'] | '';
-  language?: Job['language'] | '';
+  type?: EmploymentType | '';
+  language?: WorkingLanguage | '';
   minSalary?: number;
   status?: JobStatus;
-}
-
-export interface JobWithCompany {
-  job: Job;
-  company: Company | undefined;
 }
 
 export interface Page<T> {
@@ -32,93 +31,56 @@ export interface Page<T> {
 
 export type JobSort = 'default' | 'newest' | 'salary';
 
-function matches(job: Job, company: Company | undefined, query: JobQuery, locale: Locale): boolean {
-  if (query.status && job.status !== query.status) return false;
-
-  const needle = query.keyword?.trim().toLowerCase();
-  if (needle) {
-    const haystack = `${job.title[locale]} ${company?.name ?? ''} ${job.city}`.toLowerCase();
-    if (!haystack.includes(needle)) return false;
+export function toQueryString(params: Record<string, string | number | undefined>): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) search.set(key, String(value));
   }
-
-  if (query.industry && company?.industry !== query.industry) return false;
-  if (query.province && job.provinceId !== query.province) return false;
-  if (query.city && job.city !== query.city) return false;
-  if (query.type && job.type !== query.type) return false;
-  if (query.language && job.language !== query.language) return false;
-  if (query.minSalary && job.salaryMax < query.minSalary) return false;
-
-  return true;
+  const query = search.toString();
+  return query ? `?${query}` : '';
 }
 
-export async function listJobs(params: {
+async function orUndefinedIfMissing<T>(request: Promise<T>): Promise<T | undefined> {
+  try {
+    return await request;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return undefined;
+    throw error;
+  }
+}
+
+export function listJobs(params: {
   query: JobQuery;
   sort?: JobSort;
   page?: number;
   pageSize?: number;
-  locale: Locale;
-}): Promise<Page<JobWithCompany>> {
-  const { query, sort = 'default', page = 1, pageSize = 10, locale } = params;
-
-  const rows: JobWithCompany[] = JOBS.map((job) => ({
-    job,
-    company: COMPANIES.find((company) => company.id === job.companyId),
-  })).filter(({ job, company }) => matches(job, company, query, locale));
-
-  if (sort === 'newest') rows.sort((a, b) => a.job.postedDaysAgo - b.job.postedDaysAgo);
-  else if (sort === 'salary') rows.sort((a, b) => b.job.salaryMax - a.job.salaryMax);
-
-  const total = rows.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const currentPage = Math.min(Math.max(1, page), totalPages);
-
-  return {
-    items: rows.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    total,
-    page: currentPage,
+}): Promise<Page<JobSummary>> {
+  const { query, sort = 'default', page, pageSize } = params;
+  const search = toQueryString({
+    ...query,
+    sort: sort === 'default' ? undefined : sort,
+    page,
     pageSize,
-    totalPages,
-  };
+  });
+  return apiFetch(`/jobs${search}`);
 }
 
-export async function getJob(id: string): Promise<JobWithCompany | undefined> {
-  const job = JOBS.find((row) => row.id === id);
-  if (!job) return undefined;
-  return { job, company: COMPANIES.find((company) => company.id === job.companyId) };
+export function getJob(id: string): Promise<JobDetail | undefined> {
+  return orUndefinedIfMissing(apiFetch<JobDetail>(`/jobs/${encodeURIComponent(id)}`));
 }
 
-export async function listSimilarJobs(job: Job, limit = 5): Promise<JobWithCompany[]> {
-  return JOBS.filter(
-    (candidate) =>
-      candidate.id !== job.id &&
-      candidate.status === 'open' &&
-      candidate.city === job.city &&
-      COMPANIES.find((company) => company.id === candidate.companyId)?.industry ===
-        COMPANIES.find((company) => company.id === job.companyId)?.industry,
-  )
-    .slice(0, limit)
-    .map((candidate) => ({
-      job: candidate,
-      company: COMPANIES.find((company) => company.id === candidate.companyId),
-    }));
+export function listSimilarJobs(id: string, limit = 5): Promise<JobSummary[]> {
+  return apiFetch(`/jobs/${encodeURIComponent(id)}/similar${toQueryString({ limit })}`);
 }
 
-export async function listJobsOfCompany(companyId: string): Promise<Job[]> {
-  return JOBS.filter((job) => job.companyId === companyId && job.status === 'open');
+export function listJobsOfCompany(companyId: string): Promise<Job[]> {
+  return apiFetch(`/companies/${encodeURIComponent(companyId)}/jobs?status=open`);
 }
 
-export async function listCompanies(params: { industry?: Industry | '' } = {}): Promise<Company[]> {
-  return COMPANIES.filter((company) => !params.industry || company.industry === params.industry);
+export function listCompanies(params: { industry?: Industry | '' } = {}): Promise<Company[]> {
+  return apiFetch(`/companies${toQueryString(params)}`);
 }
 
-export async function getCompany(id: string): Promise<Company | undefined> {
-  return COMPANIES.find((company) => company.id === id);
-}
-
-export async function openRolesCount(companyId: string): Promise<number> {
-  return JOBS.filter((job) => job.companyId === companyId && job.status === 'open').length;
-}
-
-export function availableCities(province?: string): string[] {
-  return citiesOf(province);
+export function getCompany(id: string): Promise<Company | undefined> {
+  return orUndefinedIfMissing(apiFetch<Company>(`/companies/${encodeURIComponent(id)}`));
 }

@@ -7,23 +7,19 @@ import QuickAction from '../../components/QuickAction';
 import SectionHeading from '../../components/SectionHeading';
 import SearchBar from '../../components/SearchBar';
 import { ListSkeleton } from '../../components/StateBlock';
-import { useLocale, useLocalePath, useMessages } from '../../i18n';
-import { listCompanies, listJobs, openRolesCount } from '../../services/jobs';
-import type { JobWithCompany } from '../../services/jobs';
+import { useLocalePath, useMessages } from '../../i18n';
+import { listCompanies, listJobs } from '../../services/jobs';
 import { getResumeStatus } from '../../services/resume';
-import type { Company } from '../../data/types';
+import type { Company, JobSummary } from '../../services/types';
 
 const POPULAR = ['Frontend', 'Go', 'QA Automation', 'Data Analyst', 'Flutter'];
 
 export default function HomePage() {
   const t = useMessages();
-  const { locale } = useLocale();
   const path = useLocalePath();
 
-  const [hotJobs, setHotJobs] = useState<JobWithCompany[] | null>(null);
-  const [featured, setFeatured] = useState<Array<{ company: Company; openRoles: number }> | null>(
-    null,
-  );
+  const [hotJobs, setHotJobs] = useState<JobSummary[] | null>(null);
+  const [featured, setFeatured] = useState<Company[] | null>(null);
 
   const resume = getResumeStatus();
   const percent = resume.completeness;
@@ -31,26 +27,23 @@ export default function HomePage() {
   useEffect(() => {
     let active = true;
 
-    Promise.all([
-      listJobs({ query: { status: 'open' }, pageSize: 6, locale }),
-      listCompanies(),
-    ]).then(async ([jobs, companies]) => {
-      if (!active) return;
-      setHotJobs(jobs.items);
+    listJobs({ query: { status: 'open' }, pageSize: 6 })
+      .then((jobs) => jobs.items)
+      .catch(() => [])
+      .then((jobs) => {
+        if (active) setHotJobs(jobs);
+      });
 
-      const top = await Promise.all(
-        companies.slice(0, 4).map(async (company) => ({
-          company,
-          openRoles: await openRolesCount(company.id),
-        })),
-      );
-      if (active) setFeatured(top);
-    });
+    listCompanies()
+      .catch(() => [])
+      .then((companies) => {
+        if (active) setFeatured(companies.slice(0, 4));
+      });
 
     return () => {
       active = false;
     };
-  }, [locale]);
+  }, []);
 
   return (
     <>
@@ -157,8 +150,8 @@ export default function HomePage() {
             <ListSkeleton count={6} className="md:grid-cols-2 lg:grid-cols-3" />
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {hotJobs.map(({ job, company }) => (
-                <JobCard key={job.id} job={job} company={company!} />
+              {hotJobs.map((job) => (
+                <JobCard key={job.id} job={job} />
               ))}
             </div>
           )}
@@ -182,8 +175,8 @@ export default function HomePage() {
             <ListSkeleton count={4} className="sm:grid-cols-2 lg:grid-cols-4" />
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {featured.map((row) => (
-                <CompanyCard key={row.company.id} company={row.company} openRoles={row.openRoles} />
+              {featured.map((company) => (
+                <CompanyCard key={company.id} company={company} />
               ))}
             </div>
           )}
