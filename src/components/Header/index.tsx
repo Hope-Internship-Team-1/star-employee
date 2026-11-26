@@ -23,15 +23,15 @@ export default function Header() {
     { to: path('/companies'), label: t.nav.companies },
     { to: path('/career-classes'), label: t.nav.classes },
     { to: path('/messages'), label: t.nav.messages },
-    ...(session ? [{ to: path('/my-profile'), label: t.nav.profile }] : []),
+    { to: path('/my-profile'), label: t.nav.profile },
   ];
 
   return (
     <header className="sticky top-0 z-30 border-b border-outline bg-surface">
-      <Container className="flex h-20 items-center justify-between gap-6">
+      <Container className="flex h-24 items-center justify-between gap-card-pad-lg">
         <Brand compact />
 
-        <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-section-sm lg:flex">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -39,10 +39,10 @@ export default function Header() {
               end={link.end}
               className={({ isActive }) =>
                 [
-                  'whitespace-nowrap py-1 transition-colors duration-150 ease-paper',
+                  'whitespace-nowrap py-grid-1 transition-colors duration-hover-colour ease-hover-colour',
                   isActive
-                    ? 'border-b-2 border-primary font-display text-label-md text-primary'
-                    : 'font-body text-body-md text-text-secondary hover:text-ink',
+                    ? 'border-b-2 border-primary font-lead text-lead-title text-primary'
+                    : 'font-body text-body-md text-text-secondary hover:text-on-surface',
                 ].join(' ')
               }
             >
@@ -51,12 +51,12 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-card-pad-lg">
           <LocaleSwitch />
           {session === null && (
             <Link
               to={path('/login')}
-              className="whitespace-nowrap rounded-control border border-outline bg-surface-raised px-4 py-2 font-display text-label-md text-ink transition-colors duration-150 ease-paper hover:bg-surface-subtle"
+              className="whitespace-nowrap rounded-control bg-dark-tan px-grid-4 py-grid-2 font-label text-label-md text-on-surface transition-colors duration-hover-colour ease-hover-colour hover:bg-primary hover:text-on-primary"
             >
               {t.nav.login}
             </Link>
@@ -69,7 +69,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={onLogout}
-                className="whitespace-nowrap rounded-control border border-outline bg-surface-raised px-4 py-2 font-display text-label-md text-ink transition-colors duration-150 ease-paper hover:bg-surface-subtle"
+                className="whitespace-nowrap rounded-control border border-outline bg-surface-raised px-grid-4 py-grid-2 font-label text-label-md text-on-surface transition-colors duration-hover-colour ease-hover-colour hover:bg-surface-subtle"
               >
                 {t.nav.logout}
               </button>
