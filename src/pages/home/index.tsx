@@ -8,7 +8,8 @@ import SectionHeading from '../../components/SectionHeading';
 import SearchBar from '../../components/SearchBar';
 import { ListSkeleton } from '../../components/StateBlock';
 import { useLocalePath, useMessages } from '../../i18n';
-import { listCompanies, listJobs } from '../../services/jobs';
+import { listCompanies, listRandomJobs, listRecommendedJobs } from '../../services/jobs';
+import { useSession } from '../../hooks/useSession';
 import { getResumeStatus } from '../../services/resume';
 import type { Company, JobSummary } from '../../services/types';
 
@@ -21,18 +22,28 @@ export default function HomePage() {
   const [hotJobs, setHotJobs] = useState<JobSummary[] | null>(null);
   const [featured, setFeatured] = useState<Company[] | null>(null);
 
+  const session = useSession();
   const resume = getResumeStatus();
   const percent = resume.completeness;
 
   useEffect(() => {
+    if (session === undefined) return;
     let active = true;
 
-    listJobs({ query: { status: 'open' }, pageSize: 6 })
-      .then((jobs) => jobs.items)
+    const request = session ? listRecommendedJobs(6) : listRandomJobs(6);
+    request
       .catch(() => [])
       .then((jobs) => {
         if (active) setHotJobs(jobs);
       });
+
+    return () => {
+      active = false;
+    };
+  }, [session]);
+
+  useEffect(() => {
+    let active = true;
 
     listCompanies()
       .catch(() => [])
