@@ -11,9 +11,7 @@ describe('slugify', () => {
   });
 
   test('collapses runs of punctuation and trims edges', () => {
-    expect(slugify('  PT Bank Central Asia -- Jakarta  ')).toBe(
-      'pt-bank-central-asia-jakarta',
-    );
+    expect(slugify('  PT Bank Central Asia -- Jakarta  ')).toBe('pt-bank-central-asia-jakarta');
   });
 });
 

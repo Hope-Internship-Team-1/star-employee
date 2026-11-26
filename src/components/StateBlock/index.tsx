@@ -2,7 +2,13 @@ import type { ReactNode } from 'react';
 import { RotateIcon } from '../Icon';
 import { useMessages } from '../../i18n';
 
-export function ListSkeleton({ count = 3, className = '' }: { count?: number; className?: string }) {
+export function ListSkeleton({
+  count = 3,
+  className = '',
+}: {
+  count?: number;
+  className?: string;
+}) {
   return (
     <div className={`grid gap-5 ${className}`} aria-busy="true">
       {Array.from({ length: count }, (_, index) => (

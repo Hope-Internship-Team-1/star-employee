@@ -108,9 +108,7 @@ export async function listJobsOfCompany(companyId: string): Promise<Job[]> {
 }
 
 export async function listCompanies(params: { industry?: Industry | '' } = {}): Promise<Company[]> {
-  return COMPANIES.filter(
-    (company) => !params.industry || company.industry === params.industry,
-  );
+  return COMPANIES.filter((company) => !params.industry || company.industry === params.industry);
 }
 
 export async function getCompany(id: string): Promise<Company | undefined> {

@@ -1,7 +1,8 @@
 export type EmploymentType = 'full-time' | 'part-time' | 'contract' | 'internship';
 export type WorkingLanguage = 'en' | 'id';
 export type JobStatus = 'open' | 'closed';
-export type Industry = 'telecom' | 'finance' | 'ecommerce' | 'manufacturing' | 'travel' | 'electronics';
+export type Industry =
+  'telecom' | 'finance' | 'ecommerce' | 'manufacturing' | 'travel' | 'electronics';
 
 export const INDUSTRIES: Industry[] = [
   'telecom',

@@ -11,7 +11,11 @@ interface SearchBarProps {
   compact?: boolean;
 }
 
-export default function SearchBar({ initialKeyword = '', initialCity = '', compact }: SearchBarProps) {
+export default function SearchBar({
+  initialKeyword = '',
+  initialCity = '',
+  compact,
+}: SearchBarProps) {
   const t = useMessages();
   const path = useLocalePath();
   const navigate = useNavigate();

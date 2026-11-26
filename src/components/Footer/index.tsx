@@ -58,10 +58,7 @@ export default function Footer() {
         </nav>
       </Container>
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none select-none overflow-hidden"
-      >
+      <div aria-hidden="true" className="pointer-events-none select-none overflow-hidden">
         <Container>
           <div className="translate-y-4 whitespace-nowrap font-display text-display-lg leading-none text-on-primary/20">
             {t.brand.name}

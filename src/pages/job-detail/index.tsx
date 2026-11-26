@@ -118,7 +118,9 @@ export default function JobDetailPage() {
             </dl>
 
             <section className="flex flex-col gap-3">
-              <h2 className="font-display text-title-sm text-ink">{t.jobDetail.responsibilities}</h2>
+              <h2 className="font-display text-title-sm text-ink">
+                {t.jobDetail.responsibilities}
+              </h2>
               <ul className="flex list-disc flex-col gap-2 pl-5 font-body text-body-md text-text-secondary">
                 {job.responsibilities.map((item) => (
                   <li key={item.en}>{item[locale]}</li>

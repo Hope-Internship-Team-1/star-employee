@@ -285,7 +285,10 @@ export default function JobsPage() {
       )}
 
       {result && result.totalPages > 1 && (
-        <nav aria-label={t.jobs.pagination} className="flex items-center justify-between gap-4 pt-6">
+        <nav
+          aria-label={t.jobs.pagination}
+          className="flex items-center justify-between gap-4 pt-6"
+        >
           <button
             type="button"
             onClick={() => update({ page: result.page - 1 })}
