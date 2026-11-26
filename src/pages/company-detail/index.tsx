@@ -93,7 +93,7 @@ export default function CompanyPage() {
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="flex flex-col gap-3 rounded-card border border-outline bg-surface-raised p-6">
           <h2 className="font-display text-title-sm text-ink">{t.jobDetail.about}</h2>
-          <p className="font-body text-body-md text-text-secondary">{company.about[locale]}</p>
+          <p className="font-body text-body-md text-text-secondary">{company.about?.[locale]}</p>
         </section>
 
         <section className="flex flex-col gap-3 rounded-card border border-outline bg-surface-raised p-6">

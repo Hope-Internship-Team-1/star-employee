@@ -80,7 +80,7 @@ export interface Company extends CompanySummary {
   industry: Industry;
   scale: string;
   since: string;
-  about: LocalizedText;
+  about: LocalizedText | null;
   openRoles: number;
 }
 
@@ -109,16 +109,17 @@ export interface Job {
   provinceId: string;
   type: EmploymentType;
   site: WorkSite;
+  position: JobPosition;
   language: WorkingLanguage;
   salaryMin: number | null;
   salaryMax: number | null;
-  experience: LocalizedText;
-  education: LocalizedText;
+  experience: LocalizedText | null;
+  education: LocalizedText | null;
   postedAt: string;
   status: JobStatus;
-  highlights: string[];
-  responsibilities: LocalizedText[];
-  requirements: LocalizedText[];
+  highlights: string[] | null;
+  responsibilities: LocalizedText[] | null;
+  requirements: LocalizedText[] | null;
 }
 
 export interface JobDetail {
