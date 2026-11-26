@@ -34,21 +34,24 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="mt-16 overflow-hidden bg-primary text-on-primary">
-      <Container className="grid grid-cols-1 gap-12 pb-10 pt-16 lg:grid-cols-12">
-        <div className="flex flex-col justify-end gap-10 lg:col-span-6">
-          <p className="max-w-md font-body text-body-sm">{t.footer.tagline}</p>
+    <footer className="mt-section-lg overflow-hidden bg-primary text-on-primary">
+      <Container className="grid grid-cols-1 gap-section-md pb-section-md pt-section-lg lg:grid-cols-12">
+        <div className="flex flex-col justify-end gap-card-pad-lg lg:col-span-6">
+          <p className="max-w-md font-meta text-meta-md text-on-primary">{t.footer.tagline}</p>
         </div>
 
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-6">
+        <nav
+          aria-label="Footer"
+          className="grid grid-cols-2 gap-card-pad-lg sm:grid-cols-3 lg:col-span-6"
+        >
           {columns.map((column) => (
-            <div key={column.title} className="flex flex-col gap-3">
-              <span className="font-display text-label-md">{column.title}</span>
+            <div key={column.title} className="flex flex-col gap-grid-3">
+              <span className="font-label text-label-md text-on-primary">{column.title}</span>
               {column.links.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="font-body text-body-md underline-offset-4 hover:underline"
+                  className="font-body text-body-md text-on-primary underline-offset-4 hover:underline"
                 >
                   {link.label}
                 </Link>

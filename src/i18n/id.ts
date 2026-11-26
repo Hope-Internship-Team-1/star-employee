@@ -97,6 +97,8 @@ export const id: Messages = {
   },
   companies: {
     title: 'Perusahaan',
+    countOne: '{n} perusahaan',
+    countMany: '{n} perusahaan',
     openRolesOne: '{n} lowongan terbuka',
     openRolesMany: '{n} lowongan terbuka',
     filterIndustry: 'Industri',

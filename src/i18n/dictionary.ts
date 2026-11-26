@@ -95,6 +95,8 @@ export interface JobDetailMessages {
 
 export interface CompaniesMessages {
   title: string;
+  countOne: string;
+  countMany: string;
   openRolesOne: string;
   openRolesMany: string;
   filterIndustry: string;

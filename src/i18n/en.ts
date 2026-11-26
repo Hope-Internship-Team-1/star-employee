@@ -97,6 +97,8 @@ export const en: Messages = {
   },
   companies: {
     title: 'Companies',
+    countOne: '{n} company',
+    countMany: '{n} companies',
     openRolesOne: '{n} open role',
     openRolesMany: '{n} open roles',
     filterIndustry: 'Industry',
