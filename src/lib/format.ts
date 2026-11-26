@@ -1,6 +1,10 @@
 import type { Locale } from '../i18n';
 
-export function formatSalary(min: number | null, max: number | null, locale: Locale): string {
+export function formatSalary(
+  min: number | null | undefined,
+  max: number | null | undefined,
+  locale: Locale,
+): string {
   if (min == null || max == null) {
     return locale === 'id' ? 'Gaji tidak ditampilkan' : 'Salary not disclosed';
   }

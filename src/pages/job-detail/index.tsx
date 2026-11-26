@@ -242,7 +242,10 @@ export default function JobDetailPage() {
                         {near.title[locale]}
                       </span>
                       <span className="font-body text-meta-sm text-text-secondary">
-                        {near.company.name} &middot; {near.city}
+                        {near.company.name} &middot;{' '}
+                        {near.salaryMax == null
+                          ? near.city
+                          : formatSalary(near.salaryMin, near.salaryMax, locale)}
                       </span>
                     </Link>
                   </li>

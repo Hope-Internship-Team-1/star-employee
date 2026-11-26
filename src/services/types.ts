@@ -91,6 +91,8 @@ export interface JobSummary {
   city: string;
   postedAt: string;
   company: CompanySummary;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
 }
 
 export interface Job {

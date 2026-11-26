@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useLocale, useLocalePath, useMessages } from '../../i18n';
 import type { JobSummary } from '../../services/types';
-import { postedLabel } from '../../lib/format';
+import { formatSalary, postedLabel } from '../../lib/format';
 import { resourcePath } from '../../lib/slug';
 
 export default function JobCard({ job }: { job: JobSummary }) {
@@ -36,7 +36,11 @@ export default function JobCard({ job }: { job: JobSummary }) {
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-outline pt-3">
-        <span className="font-body text-meta-sm text-ink">{t.enums.employmentType[job.type]}</span>
+        <span className="font-mono text-meta-sm tabular-nums text-ink">
+          {job.salaryMax == null
+            ? t.enums.employmentType[job.type]
+            : formatSalary(job.salaryMin, job.salaryMax, locale)}
+        </span>
         <span className="font-body text-meta-sm text-text-muted">
           {postedLabel(job.postedAt, locale)}
         </span>

@@ -9,7 +9,7 @@ import { format, useLocale, useLocalePath, useMessages } from '../../i18n';
 import { EMPLOYMENT_TYPES, INDUSTRIES, PAGE_SIZE, SALARY_BANDS } from '../../services/types';
 import type { EmploymentType, Industry, JobSummary, WorkingLanguage } from '../../services/types';
 import { PROVINCES, citiesOf } from '../../lib/geo';
-import { postedLabel } from '../../lib/format';
+import { formatSalary, postedLabel } from '../../lib/format';
 import { resourcePath } from '../../lib/slug';
 import { listJobs } from '../../services/jobs';
 import type { JobSort, Page } from '../../services/jobs';
@@ -272,6 +272,11 @@ export default function JobsPage() {
                   </td>
                   <td className="whitespace-nowrap px-5 py-4 font-body text-meta-sm text-ink">
                     {t.enums.employmentType[job.type]}
+                    {job.salaryMax != null && (
+                      <p className="font-mono tabular-nums text-text-secondary">
+                        {formatSalary(job.salaryMin, job.salaryMax, locale)}
+                      </p>
+                    )}
                   </td>
                   <td className="whitespace-nowrap px-5 py-4 font-body text-meta-sm text-text-secondary">
                     {postedLabel(job.postedAt, locale)}
