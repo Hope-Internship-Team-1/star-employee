@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'antd';
 import { AsideDone } from '../../components/AuthAside';
 import AuthLayout from '../../components/AuthLayout';
-import { format, useMessages } from '../../i18n';
+import { format, useLocale, useMessages } from '../../i18n';
 import { getMe } from '../../services/auth';
 import { getResumeStatus } from '../../services/resume';
 
 export default function WelcomePage() {
   const t = useMessages();
+  const { locale } = useLocale();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const resume = getResumeStatus();
@@ -58,10 +59,10 @@ export default function WelcomePage() {
       </ul>
 
       <div className="mt-6 flex flex-col gap-3">
-        <Button type="primary" block className="!h-10" onClick={() => goTo('/')}>
+        <Button type="primary" block className="!h-10" onClick={() => goTo(`/${locale}`)}>
           {t.welcome.completeResume}
         </Button>
-        <Button block className="!h-10 border-line" onClick={() => goTo('/')}>
+        <Button block className="!h-10 border-line" onClick={() => goTo(`/${locale}`)}>
           {t.welcome.browseJobs}
         </Button>
       </div>
