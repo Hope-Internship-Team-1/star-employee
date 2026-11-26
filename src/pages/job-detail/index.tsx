@@ -80,10 +80,10 @@ export default function JobDetailPage() {
 
   const meta = [
     { label: t.jobs.employmentType, value: t.enums.employmentType[job.type] },
-    { label: t.jobDetail.experience, value: job.experience[locale] },
-    { label: t.jobDetail.education, value: job.education[locale] },
+    { label: t.jobDetail.experience, value: job.experience?.[locale] },
+    { label: t.jobDetail.education, value: job.education?.[locale] },
     { label: t.jobDetail.posted, value: postedLabel(job.postedAt, locale) },
-  ];
+  ].filter((item) => item.value);
 
   return (
     <Container className="py-10">
@@ -116,25 +116,29 @@ export default function JobDetailPage() {
               ))}
             </dl>
 
-            <section className="flex flex-col gap-3">
-              <h2 className="font-display text-title-sm text-ink">
-                {t.jobDetail.responsibilities}
-              </h2>
-              <ul className="flex list-disc flex-col gap-2 pl-5 font-body text-body-md text-text-secondary">
-                {job.responsibilities.map((item) => (
-                  <li key={item.en}>{item[locale]}</li>
-                ))}
-              </ul>
-            </section>
+            {job.responsibilities && job.responsibilities.length > 0 && (
+              <section className="flex flex-col gap-3">
+                <h2 className="font-display text-title-sm text-ink">
+                  {t.jobDetail.responsibilities}
+                </h2>
+                <ul className="flex list-disc flex-col gap-2 pl-5 font-body text-body-md text-text-secondary">
+                  {job.responsibilities.map((item) => (
+                    <li key={item.en}>{item[locale]}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
-            <section className="flex flex-col gap-3">
-              <h2 className="font-display text-title-sm text-ink">{t.jobDetail.requirements}</h2>
-              <ul className="flex list-disc flex-col gap-2 pl-5 font-body text-body-md text-text-secondary">
-                {job.requirements.map((item) => (
-                  <li key={item.en}>{item[locale]}</li>
-                ))}
-              </ul>
-            </section>
+            {job.requirements && job.requirements.length > 0 && (
+              <section className="flex flex-col gap-3">
+                <h2 className="font-display text-title-sm text-ink">{t.jobDetail.requirements}</h2>
+                <ul className="flex list-disc flex-col gap-2 pl-5 font-body text-body-md text-text-secondary">
+                  {job.requirements.map((item) => (
+                    <li key={item.en}>{item[locale]}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </article>
 
           {company && (
@@ -181,7 +185,9 @@ export default function JobDetailPage() {
                 </div>
               </dl>
 
-              <p className="font-body text-body-sm text-text-secondary">{company.about[locale]}</p>
+              <p className="font-body text-body-sm text-text-secondary">
+                {company.about?.[locale]}
+              </p>
             </section>
           )}
         </div>

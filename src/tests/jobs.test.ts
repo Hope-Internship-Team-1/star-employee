@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { getCompany, getJob, listJobs, toQueryString } from '../services/jobs';
+import { getCompany, getJob, listJobs, toJobSummary, toQueryString } from '../services/jobs';
 import { daysSince, formatSalary, postedLabel } from '../lib/format';
 
 beforeEach(() => vi.stubEnv('VITE_API_BASE_URL', 'https://api.test'));
@@ -42,6 +42,23 @@ describe('listJobs', () => {
     await listJobs({ query: {}, sort: 'salary' });
 
     expect(fetch.mock.calls[0][0]).toBe('https://api.test/jobs?sort=salary');
+  });
+});
+
+describe('toJobSummary', () => {
+  test('flattens a { job, company } item into the summary shape', () => {
+    const job = { id: 'job_001', title: { en: 'Dev', id: 'Dev' }, city: 'Bandung' };
+    const company = { id: 'cmp_001', name: 'Acme', initials: 'AC', logoUrl: null, city: 'X' };
+
+    const summary = toJobSummary({ job, company } as never);
+
+    expect(summary).toMatchObject({ id: 'job_001', title: { en: 'Dev' }, city: 'Bandung' });
+    expect(summary.company).toEqual({ id: 'cmp_001', name: 'Acme', initials: 'AC', logoUrl: null });
+  });
+
+  test('passes a summary item through untouched', () => {
+    const item = { id: 'job_002', company: { id: 'cmp_002' } };
+    expect(toJobSummary(item as never)).toBe(item);
   });
 });
 
