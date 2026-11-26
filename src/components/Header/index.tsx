@@ -20,7 +20,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-outline bg-surface">
       <Container className="flex h-20 items-center justify-between gap-6">
-        <Brand />
+        <Brand compact />
 
         <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
           {links.map((link) => (

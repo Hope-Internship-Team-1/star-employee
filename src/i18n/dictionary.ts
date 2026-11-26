@@ -155,27 +155,45 @@ export interface Messages {
     interview: string;
     notSuitable: string;
   };
+  poster: {
+    line1: string;
+    line2: string;
+    slogan: string;
+    colophon: string;
+    edition: string;
+    index: string;
+  };
   login: {
     title: string;
-    tabPassword: string;
     tabCode: string;
+    tabPassword: string;
     emailLabel: string;
     emailPlaceholder: string;
     passwordLabel: string;
     passwordPlaceholder: string;
     submit: string;
+    submitting: string;
     sendCode: string;
     resendIn: string;
+    resendInShort: string;
     codeLabel: string;
+    codePlaceholder: string;
     codeHint: string;
+    terms: string;
+    termsRequired: string;
+    retry: string;
+    errorBanner: string;
     noAccount: string;
     registerLink: string;
   };
   register: {
+    step1: string;
+    step2: string;
+    step3: string;
     step1Title: string;
     step2Title: string;
-    sentTo: string;
     step3Title: string;
+    sentTo: string;
     emailLabel: string;
     fullName: string;
     fullNamePlaceholder: string;
@@ -186,6 +204,7 @@ export interface Messages {
     verify: string;
     finish: string;
     continue: string;
+    submitting: string;
     resend: string;
     resendIn: string;
     backToLogin: string;
@@ -219,10 +238,5 @@ export interface Messages {
     tooManyAttempts: string;
     network: string;
     generic: string;
-  };
-  panel: {
-    loginLine: string;
-    step: string;
-    done: string;
   };
 }
