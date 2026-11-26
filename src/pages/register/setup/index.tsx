@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Button, Form, Input } from 'antd';
-import { AsideSteps } from '../../../components/AuthAside';
+import { Form, Input } from 'antd';
 import AuthLayout from '../../../components/AuthLayout';
+import AuthStepper from '../../../components/AuthStepper';
 import FormError from '../../../components/FormError';
-import { fieldClassName } from '../../../components/fieldClassName';
+import { bodyFieldClassName } from '../../../components/fieldClassName';
+import { primaryButtonClassName } from '../../../components/buttonClassName';
 import { useAuthFlow } from '../../../context/authFlowContext';
 import { useLocalePath, useMessages } from '../../../i18n';
 import { errorKey } from '../../../services/errors';
@@ -45,12 +46,14 @@ export default function RegisterSetupPage() {
   if (!email) return <Navigate to={path('/register')} replace />;
 
   return (
-    <AuthLayout panel={<AsideSteps current={3} />}>
-      <h1 className="font-display text-[2.5rem] leading-none tracking-tight text-ink">
+    <AuthLayout>
+      <AuthStepper current={3} />
+
+      <h1 className="font-page text-page-lg-mobile text-on-surface lg:text-page-lg">
         {t.register.step3Title}
       </h1>
-      <p className="mt-4 text-sm text-ink-soft">
-        {t.register.emailLabel}: {email}
+      <p className="font-body text-body-sm text-text-secondary">
+        {t.register.emailLabel}: <span className="font-mono text-mono-meta">{email}</span>
       </p>
 
       <Form
@@ -60,7 +63,7 @@ export default function RegisterSetupPage() {
         requiredMark={false}
         onValuesChange={() => setError(null)}
         onFinish={onFinish}
-        className="mt-6 [&_.ant-form-item]:mb-4"
+        className="flex flex-col gap-grid-4"
       >
         <Form.Item
           label={t.register.fullName}
@@ -73,14 +76,14 @@ export default function RegisterSetupPage() {
           <Input
             autoComplete="name"
             placeholder={t.register.fullNamePlaceholder}
-            className={fieldClassName}
+            className={bodyFieldClassName}
           />
         </Form.Item>
 
         <Form.Item
           label={t.register.passwordLabel}
           name="password"
-          extra={t.register.passwordHint}
+          extra={<span className="font-meta text-meta-sm">{t.register.passwordHint}</span>}
           rules={[
             { required: true, message: t.errors.passwordRequired },
             {
@@ -91,7 +94,7 @@ export default function RegisterSetupPage() {
             },
           ]}
         >
-          <Input.Password autoComplete="new-password" className={fieldClassName} />
+          <Input.Password autoComplete="new-password" className={bodyFieldClassName} />
         </Form.Item>
 
         <Form.Item
@@ -109,14 +112,19 @@ export default function RegisterSetupPage() {
             },
           ]}
         >
-          <Input.Password autoComplete="new-password" className={fieldClassName} />
+          <Input.Password autoComplete="new-password" className={bodyFieldClassName} />
         </Form.Item>
 
         {error && <FormError message={t.errors[error]} />}
 
-        <Button type="primary" htmlType="submit" block loading={submitting} className="!h-10">
-          {t.register.finish}
-        </Button>
+        <button
+          type="submit"
+          disabled={submitting}
+          aria-busy={submitting}
+          className={primaryButtonClassName}
+        >
+          {submitting ? t.register.submitting : t.register.finish}
+        </button>
       </Form>
     </AuthLayout>
   );
