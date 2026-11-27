@@ -35,7 +35,7 @@ export default function RegisterSetupPage() {
     try {
       await completeRegistration({ name: values.name, password: values.password });
       reset();
-      navigate(path('/welcome'), { replace: true });
+      navigate(path('/login'), { replace: true });
     } catch (caught) {
       setError(errorKey(caught));
     } finally {
