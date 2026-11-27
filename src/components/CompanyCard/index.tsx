@@ -1,7 +1,38 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format, useLocalePath, useMessages } from '../../i18n';
 import type { Company } from '../../services/types';
 import { resourcePath } from '../../lib/slug';
+
+function CompanyLogo({ company, variant }: { company: Company; variant: 'card' | 'row' }) {
+  const [failed, setFailed] = useState(false);
+  const size = variant === 'row' ? 'h-10 w-10' : 'h-12 w-12';
+
+  if (company.logoUrl && !failed) {
+    return (
+      <img
+        src={company.logoUrl}
+        alt=""
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className={`${size} shrink-0 rounded-control object-contain`}
+      />
+    );
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className={
+        variant === 'row'
+          ? 'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary font-label text-label-md text-on-primary'
+          : 'inline-flex h-12 w-12 items-center justify-center rounded-control bg-primary font-display text-title-md text-on-primary'
+      }
+    >
+      {company.initials}
+    </span>
+  );
+}
 
 export default function CompanyCard({
   company,
@@ -24,18 +55,7 @@ export default function CompanyCard({
     n: openRoles,
   });
 
-  const tile = (
-    <span
-      aria-hidden="true"
-      className={
-        variant === 'row'
-          ? 'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary font-label text-label-md text-on-primary'
-          : 'inline-flex h-12 w-12 items-center justify-center rounded-control bg-primary font-display text-title-md text-on-primary'
-      }
-    >
-      {company.initials}
-    </span>
-  );
+  const tile = <CompanyLogo company={company} variant={variant} />;
 
   if (variant === 'row') {
     return (
