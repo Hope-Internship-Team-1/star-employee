@@ -35,6 +35,23 @@ export interface HomeMessages {
 
 export interface JobsMessages {
   title: string;
+  lead: string;
+  rolesCount: string;
+  cityCount: string;
+  allLocations: string;
+  allProvincesOf: string;
+  viewMode: string;
+  viewCards: string;
+  viewList: string;
+  showing: string;
+  applyNow: string;
+  recommended: string;
+  resumeBadge: string;
+  incompleteTitle: string;
+  incompleteMeter: string;
+  incompleteDesc: string;
+  incompleteModules: string;
+  completeProfile: string;
   filterIndustry: string;
   filterProvince: string;
   filterCity: string;
@@ -68,6 +85,7 @@ export interface JobsMessages {
 }
 
 export interface JobDetailMessages {
+  backToJobs: string;
   responsibilities: string;
   requirements: string;
   companyCard: string;
