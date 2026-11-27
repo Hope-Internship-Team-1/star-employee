@@ -256,6 +256,7 @@ export interface Messages {
     invalidCredentials: string;
     invalidCode: string;
     tooManyAttempts: string;
+    accountNotFound: string;
     network: string;
     generic: string;
   };

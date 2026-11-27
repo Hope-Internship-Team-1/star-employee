@@ -285,6 +285,7 @@ export const en: Messages = {
     invalidCredentials: 'Email or password is incorrect.',
     invalidCode: 'That code is not valid. Request a new one.',
     tooManyAttempts: 'Too many attempts. Wait a few minutes and try again.',
+    accountNotFound: 'No account is registered with this email. Register first.',
     network: 'Could not reach the server. Check your connection and try again.',
     generic: 'Unable to verify your details. Check the fields and try again.',
   },

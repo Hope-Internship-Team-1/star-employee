@@ -285,6 +285,7 @@ export const id: Messages = {
     invalidCredentials: 'Email atau kata sandi salah.',
     invalidCode: 'Kode tidak valid. Minta kode baru.',
     tooManyAttempts: 'Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.',
+    accountNotFound: 'Email ini belum terdaftar. Silakan daftar terlebih dahulu.',
     network: 'Tidak bisa menghubungi server. Periksa koneksi lalu coba lagi.',
     generic: 'Gagal memverifikasi data. Periksa kembali lalu coba lagi.',
   },

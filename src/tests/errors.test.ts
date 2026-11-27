@@ -10,6 +10,10 @@ test('maps a verify 401 to an invalid code', () => {
   expect(errorKey(new ApiError(401, 'Unauthorized'), 'verify')).toBe('invalidCode');
 });
 
+test('maps a 404 to an unknown account', () => {
+  expect(errorKey(new ApiError(404, 'account not found'), 'login')).toBe('accountNotFound');
+});
+
 test('maps 429 to too many attempts', () => {
   expect(errorKey(new ApiError(429, 'Too many requests'))).toBe('tooManyAttempts');
 });
