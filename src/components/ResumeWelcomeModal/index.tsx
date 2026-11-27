@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const STORAGE_KEY = 'resume-welcome-seen';
@@ -15,6 +15,14 @@ type Props = {
   jobsHref?: string;
 };
 
+function hasSeen(key: string): boolean {
+  try {
+    return localStorage.getItem(key) !== null;
+  } catch {
+    return false; // storage unavailable: just show it
+  }
+}
+
 const DEFAULT_MODULES: ResumeModule[] = [
   { label: 'Full name', done: true },
   { label: 'Education', done: false },
@@ -24,8 +32,16 @@ const DEFAULT_MODULES: ResumeModule[] = [
 
 function CheckIcon({ className = '' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2"
-      strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
       <path d="M4 10.5l4 4 8-9" />
     </svg>
   );
@@ -39,11 +55,24 @@ function ProgressRing({ percent }: { percent: number }) {
   return (
     <div className="relative mx-auto" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90" aria-hidden="true">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e5e2dd" strokeWidth={stroke} />
         <circle
-          cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#b5522d"
-          strokeWidth={stroke} strokeLinecap="round"
-          strokeDasharray={c} strokeDashoffset={c * (1 - percent / 100)}
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="#e5e2dd"
+          strokeWidth={stroke}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="#b5522d"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - percent / 100)}
           style={{ transition: 'stroke-dashoffset 700ms ease-out' }}
         />
       </svg>
@@ -63,23 +92,14 @@ export default function ResumeWelcomeModal({
   resumeHref = '/resume',
   jobsHref = '/jobs',
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [closedKey, setClosedKey] = useState<string | null>(null);
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   const storageKey = userKey ? `${STORAGE_KEY}:${userKey}` : null;
 
-  // Open once, right after the user is logged in
-  useEffect(() => {
-    if (!storageKey) {
-      setOpen(false);
-      return;
-    }
-    try {
-      if (localStorage.getItem(storageKey)) return;
-    } catch { /* storage unavailable: just show it */ }
-    setOpen(true);
-  }, [storageKey]);
+  // Open once per logged-in user: derived from props/storage, no setState in an effect
+  const open = storageKey !== null && closedKey !== storageKey && !hasSeen(storageKey);
 
   // Animate the ring once opened
   useEffect(() => {
@@ -88,10 +108,15 @@ export default function ResumeWelcomeModal({
     return () => clearTimeout(t);
   }, [open, percent]);
 
-  const close = () => {
-    try { if (storageKey) localStorage.setItem(storageKey, '1'); } catch { /* ignore */ }
-    setOpen(false);
-  };
+  const close = useCallback(() => {
+    if (!storageKey) return;
+    try {
+      localStorage.setItem(storageKey, '1');
+    } catch {
+      /* ignore */
+    }
+    setClosedKey(storageKey);
+  }, [storageKey]);
 
   // Escape to close, lock body scroll, focus the dialog
   useEffect(() => {
@@ -105,7 +130,7 @@ export default function ResumeWelcomeModal({
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [open, close]);
 
   if (!open) return null;
 
@@ -128,7 +153,9 @@ export default function ResumeWelcomeModal({
           {/* Left: progress */}
           <div className="bg-[#faf8f5] px-8 py-10 text-center md:border-r md:border-neutral-200">
             <CheckIcon className="mx-auto h-5 w-5 text-[#b5522d]" />
-            <h2 id="resume-welcome-title" className="mt-4 text-3xl font-bold">You're in</h2>
+            <h2 id="resume-welcome-title" className="mt-4 text-3xl font-bold">
+              You're in
+            </h2>
             <p className="mx-auto mt-3 max-w-[16rem] text-sm text-neutral-600">
               Let's get your resume ready so you can start applying.
             </p>
@@ -140,11 +167,15 @@ export default function ResumeWelcomeModal({
           {/* Right: checklist */}
           <div className="px-8 py-8">
             <p className="text-sm text-neutral-800">
-              Complete {remaining} more {remaining === 1 ? 'module' : 'modules'} to reach the {required}% you need to apply.
+              Complete {remaining} more {remaining === 1 ? 'module' : 'modules'} to reach the{' '}
+              {required}% you need to apply.
             </p>
             <ul className="mt-6 border-t border-neutral-200">
               {modules.map((m) => (
-                <li key={m.label} className="flex items-center justify-between border-b border-neutral-200 py-4 text-sm">
+                <li
+                  key={m.label}
+                  className="flex items-center justify-between border-b border-neutral-200 py-4 text-sm"
+                >
                   <span>{m.label}</span>
                   {m.done ? (
                     <CheckIcon className="h-4 w-4 text-[#b5522d]" />
